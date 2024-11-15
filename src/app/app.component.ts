@@ -1,13 +1,23 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
+import { SpinnerComponent } from "./Fearure/Inner/spinner/spinner.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, SpinnerComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent {
+export class AppComponent  implements OnInit {
   title = 'learnings';
+  constructor(
+  ) {}
+  
+  ngOnInit(): void {
+    // if (this.jwtTokenService.isTokenExpired()) {
+    //   // If the token is expired, redirect to login
+    //   this.router.navigate(['/login']);
+    // }
+  }
 }

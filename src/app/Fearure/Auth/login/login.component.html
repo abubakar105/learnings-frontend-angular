@@ -1,0 +1,50 @@
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <div>
+    <label for="email">Email</label>
+    <input id="email" type="email" formControlName="email" />
+    <div
+      *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+    >
+      <small *ngIf="loginForm.get('email')?.errors?.['required']"
+        >Email is required.</small
+      >
+      <small *ngIf="loginForm.get('email')?.errors?.['email']"
+        >Invalid email format.</small
+      >
+    </div>
+  </div>
+  <div>
+    <label for="password">Password:</label>
+    <input id="password" type="password" formControlName="password" />
+    <div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
+      <small *ngIf="loginForm.get('password')?.errors?.['required']">Password is required.</small>
+      <small *ngIf="loginForm.get('password')?.errors?.['minlength']">
+        Password must be at least 6 characters.
+      </small>
+    </div>
+  </div>
+
+  <!-- <div>
+    <label for="password">Password</label>
+    <input id="password" type="password" formControlName="password" />
+    <div
+      *ngIf="
+        loginForm.get('password')?.touched &&
+        loginForm.get('password')?.errors as errors
+      "
+      class="text-danger"
+    >
+      <div *ngIf="errors['required']">Password is required.</div>
+      <div *ngIf="errors['pattern']">
+        <ul>
+          <li>Password should be alphanumeric</li>
+          <li>A letter of the password should be capital</li>
+          <li>Password must contain a special character ($, !, &, etc)</li>
+          <li>Password length must be greater than 7 characters</li>
+        </ul>
+      </div>
+    </div>
+  </div> -->
+
+  <button type="submit" [disabled]="loginForm.invalid">Login</button>
+</form>
