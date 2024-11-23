@@ -29,7 +29,12 @@ export class AuthService {
       })
     );
   }
-
+  duplicateUserCheck(email:any):Observable<any>{
+    return this.http.post<any>('https://localhost:7195/api/User/duplicateUser',email)
+  }
+  RegisterUser(registerMode:any):Observable<any>{
+    return this.http.post<any>('https://localhost:7195/api/User',registerMode)
+  }
   private storeTokens(res: any) {
     localStorage.setItem('token', res.token);
     localStorage.setItem('tokenExpiry', res.expiration);
