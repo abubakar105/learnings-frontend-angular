@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { AuthService } from '../Services/login.service';
+import { Observable, of } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -8,19 +10,29 @@ import { AuthService } from '../Services/login.service';
 export class AuthGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
-  canActivate(): boolean {
+  canActivate(): Observable<boolean> {
     const token = this.authService.getToken();
-
-    if (!token) {
-      this.router.navigate(['/login']);
-      return false;
+    if (!token || this.authService.isTokenExpired()) {
+      return this.authService.refreshToken().pipe(
+        switchMap((newToken) => {
+          if (newToken) {
+            // If token refresh is successful, allow access to the route
+            return [true];
+          } else {
+            // If refresh fails, redirect to login
+            this.router.navigate(['/login']);
+            return [false];
+          }
+        }),
+        catchError(() => {
+          // Handle error if refreshing the token fails
+          this.router.navigate(['/login']);
+          return [false];
+        })
+      );
     }
 
-    if (this.authService.isTokenExpired()) {
-      // If token is expired, let the interceptor handle it
-      return true;
-    }
-
-    return true;
+    // If token is valid, allow access
+    return of(true);
   }
 }

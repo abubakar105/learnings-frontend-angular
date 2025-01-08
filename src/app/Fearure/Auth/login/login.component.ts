@@ -36,6 +36,7 @@ export class LoginComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
       });
+
       var email=this.router.getCurrentNavigation()?.extras?.state?.['email'];
       var password=this.router.getCurrentNavigation()?.extras?.state?.['password'];
       if(email != null && password != null ){
@@ -48,6 +49,8 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(): void {
+    this.loginForm.markAllAsTouched();
+    
     if (this.loginForm.valid) {
       this.authService.login(this.loginForm.value).subscribe({
         next: (response) => {
