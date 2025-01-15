@@ -20,12 +20,13 @@ import { catchError, debounceTime, map, Observable, of, switchMap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../Core/Services/login.service';
 import { ToastService } from '../../../Core/Services/ToastService';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-register-user',
   standalone: true,
   imports: [
+    RouterModule,
     CommonModule,
     ReactiveFormsModule,
     OnlyNumberDirective,

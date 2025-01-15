@@ -35,6 +35,15 @@ export class AuthService {
   RegisterUser(registerMode:any):Observable<any>{
     return this.http.post<any>('https://localhost:7195/api/User',registerMode)
   }
+  SendOTPEmail(email:any):Observable<any>{
+    return this.http.post<any>('https://localhost:7195/api/User/forgetPassword',email)
+  }
+  VerifyOtp(OtpCode:any,email:any):Observable<any>{
+    return this.http.post<any>('https://localhost:7195/api/User/verifyOtp',{email,OtpCode})
+  }
+  changePassword(resetPassword:any):Observable<any>{
+    return this.http.post<any>('https://localhost:7195/api/User/ChangeForgetPassword',resetPassword)
+  }
   private storeTokens(res: any) {
     localStorage.setItem('token', res.token);
     localStorage.setItem('tokenExpiry', res.expiration);

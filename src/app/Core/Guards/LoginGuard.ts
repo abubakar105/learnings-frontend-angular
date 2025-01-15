@@ -10,13 +10,14 @@ export class LoginGuard implements CanActivate {
 
   canActivate(): boolean {
     const token = this.authService.getToken();
-    const expToken = this.authService.isTokenExpired();
+    const isTokenExpired = this.authService.isTokenExpired();
 
-    if (!token) {
-      this.router.navigate(['/login']);
-      return true;
+    if (token && !isTokenExpired) {
+      // If the user is already logged in, redirect them to home
+      this.router.navigate(['/home']);
+      return false;
     }
-    this.router.navigate(['/home']);
-    return false;
+    // If not logged in, allow access to the route
+    return true;
   }
 }
