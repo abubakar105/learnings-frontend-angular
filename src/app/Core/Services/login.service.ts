@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, catchError, filter, of, switchMap, tap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../../../enviornments/environment';
 
 interface AuthResponse {
   token: string;
@@ -15,6 +16,7 @@ interface AuthResponse {
   providedIn: 'root',
 })
 export class AuthService {
+  private baseUrl = environment.apiUrl;
   private tokenSubject = new BehaviorSubject<string | null>(null);
   private refreshTokenSubject = new BehaviorSubject<string | null>(null);
   
@@ -23,26 +25,26 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {}
 
   login(credentials: { email: string; password: string }): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>('https://localhost:7195/api/User/login', credentials).pipe(
+    return this.http.post<AuthResponse>('https://localhost:7195/User/login', credentials).pipe(
       tap((res) => {
         this.storeTokens(res);  
       })
     );
   }
   duplicateUserCheck(email:any):Observable<any>{
-    return this.http.post<any>('https://localhost:7195/api/User/duplicateUser',email)
+    return this.http.post<any>(`${this.baseUrl}/User/duplicateUser`,email)
   }
   RegisterUser(registerMode:any):Observable<any>{
-    return this.http.post<any>('https://localhost:7195/api/User',registerMode)
+    return this.http.post<any>(`${this.baseUrl}/User`,registerMode)
   }
   SendOTPEmail(email:any):Observable<any>{
-    return this.http.post<any>('https://localhost:7195/api/User/forgetPassword',email)
+    return this.http.post<any>(`${this.baseUrl}/User/forgetPassword`,email)
   }
   VerifyOtp(OtpCode:any,email:any):Observable<any>{
-    return this.http.post<any>('https://localhost:7195/api/User/verifyOtp',{email,OtpCode})
+    return this.http.post<any>(`${this.baseUrl}/User/verifyOtp`,{email,OtpCode})
   }
   changePassword(resetPassword:any):Observable<any>{
-    return this.http.post<any>('https://localhost:7195/api/User/ChangeForgetPassword',resetPassword)
+    return this.http.post<any>(`${this.baseUrl}/User/ChangeForgetPassword`,resetPassword)
   }
   private storeTokens(res: any) {
     localStorage.setItem('token', res.token);
@@ -84,7 +86,7 @@ export class AuthService {
 
     return this.http
       .post<any>(
-        'https://localhost:7195/api/User/refresh-token',
+        `${this.baseUrl}/User/refresh-token`,
         { refreshToken },
       )
       .pipe(
@@ -128,7 +130,7 @@ export class AuthService {
 //   providedIn: 'root'
 // })
 // export class AuthService {
-//   private authUrl = 'https://localhost:7195/api/User';
+//   private authUrl = 'https://localhost:7195/User';
 //   private currentUserSubject: BehaviorSubject<any>;
 //   public currentUser: Observable<any>;
 
