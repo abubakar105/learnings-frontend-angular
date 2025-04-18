@@ -1,0 +1,43 @@
+<div class="relative menu" (clickOutside)="dropdownOpen = false" outsideClick #menu>
+    <!-- Selected options display -->
+    <div 
+      class="border border-gray-300 rounded-lg p-2 cursor-pointer flex justify-between items-center" 
+      (click)="toggleDropdown()">
+      <div class="truncate">
+        <!-- If any roles are selected, display them; otherwise, show placeholder -->
+        <span *ngIf="selectedOptions.length; else placeholderTemplate">
+            {{ selectedOptionNames }}
+        </span>
+        <ng-template #placeholderTemplate>
+          <span class="text-gray-400">Select roles</span>
+        </ng-template>
+      </div>
+      <!-- Arrow Icon -->
+      <svg 
+        class="w-4 h-4 transform" 
+        [ngClass]="{'rotate-180': dropdownOpen}" 
+        xmlns="http://www.w3.org/2000/svg" 
+        fill="none" 
+        viewBox="0 0 24 24" 
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </div>
+
+    <!-- Dropdown menu -->
+    <div 
+      *ngIf="dropdownOpen" 
+      class="absolute top-full left-0 right-0 z-10 bg-white border border-gray-300 rounded-lg mt-1 p-2 shadow-lg">
+      <div *ngFor="let option of options" class="flex items-center py-1">
+        <input
+          type="checkbox"
+          [id]="'role-' + option.id"
+          [value]="option.name"
+          [checked]="isSelected(option)"
+          (change)="onOptionChange($event, option)"
+          class="mr-2"
+        />
+        <label [for]="'role-' + option.id" class="cursor-pointer">{{ option.name }}</label>
+      </div>
+    </div>
+  </div>

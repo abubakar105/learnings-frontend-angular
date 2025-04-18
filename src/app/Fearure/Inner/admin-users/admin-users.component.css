@@ -1,0 +1,30 @@
+/* Hide dropdown-menu by default */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    min-width: auto;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    padding: 0.5rem 0;
+    z-index: 1000;
+    border-radius: 5px;
+    /* background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1)); */
+  }
+  
+  /* Show the menu when the "show" class is added */
+  .dropdown-menu.show {
+    display: block;
+  }
+  
+  /* Optional: Style for dropdown items */
+  .dropdown-item {
+    padding: 0.25rem 1.5rem;
+    cursor: pointer;
+    text-decoration: none;
+    color: #212529;
+  }
+  
+  .dropdown-item:hover {
+    background-color: #e5e7eb;
+  }
+  
