@@ -21,6 +21,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../Core/Services/login.service';
 import { ToastService } from '../../../Core/Services/ToastService';
 import { Router, RouterModule } from '@angular/router';
+import { DuplicateCheckValidator } from '../../../Shared/Methods/duplicateEmailCheck';
 
 @Component({
   selector: 'app-register-user',
@@ -30,7 +31,6 @@ import { Router, RouterModule } from '@angular/router';
     CommonModule,
     ReactiveFormsModule,
     OnlyNumberDirective,
-    OnlyNumberWithFormatDirective,
   ],
   templateUrl: './register-user.component.html',
   styleUrl: './register-user.component.css',
@@ -43,7 +43,8 @@ export class RegisterUserComponent {
     private http: HttpClient,
     private authService: AuthService,
     private toast: ToastService,
-    private router: Router
+    private router: Router,
+    private duplicateCheckValidator: DuplicateCheckValidator
   ) {
     this.registerForm = this.fb.group(
       {
@@ -57,7 +58,7 @@ export class RegisterUserComponent {
               Validators.email,
               Validators.pattern(this.emailReg),
             ],
-            asyncValidators: [this.duplicateEmailValidator()],
+            asyncValidators: [this.duplicateCheckValidator.emailValidator()],
             updateOn: 'blur',
           },
         ],
@@ -77,19 +78,19 @@ export class RegisterUserComponent {
     );
   }
 
-  duplicateEmailValidator(): AsyncValidatorFn {
-    return (control: AbstractControl): Observable<ValidationErrors | null> => {
-      if (!control.value) {
-        return of(null);
-      }
+  // duplicateEmailValidator(): AsyncValidatorFn {
+  //   return (control: AbstractControl): Observable<ValidationErrors | null> => {
+  //     if (!control.value) {
+  //       return of(null);
+  //     }
 
-      return this.authService.duplicateUserCheck({ email: control.value }).pipe(
-        map((response: any) => {
-          return response?.status === 200 ? { duplicateEmail: true } : null;
-        })
-      );
-    };
-  }
+  //     return this.authService.duplicateUserCheck({ email: control.value }).pipe(
+  //       map((response: any) => {
+  //         return response?.status === 200 ? { duplicateEmail: true } : null;
+  //       })
+  //     );
+  //   };
+  // }
 
   onSubmit() {
     this.markFormGroupTouched(this.registerForm);

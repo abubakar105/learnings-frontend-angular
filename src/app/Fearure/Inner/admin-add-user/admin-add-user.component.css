@@ -1,0 +1,24 @@
+/* This is the background overlay container */
+.background-overlay {
+    position: fixed;  /* Ensure it covers the entire screen */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3); /* Reduced opacity for transparency */
+    backdrop-filter: blur(5px);  /* Reduced blur effect */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;  /* Make sure it's above other content */
+}
+
+/* This is the form container */
+.form-container {
+    width: 60%;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    font-family: sans-serif;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}

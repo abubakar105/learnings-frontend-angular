@@ -7,14 +7,52 @@ import { LoginGuard } from './Core/Guards/LoginGuard';
 import { ForgetPasswordComponent } from './Fearure/Auth/forget-password/forget-password.component';
 import { ResetPasswordComponent } from './Fearure/Auth/reset-password/reset-password.component';
 import { CheckYourEmailComponent } from './Fearure/Auth/check-your-email/check-your-email.component';
+import { AdminLayoutComponent } from './Fearure/Inner/admin-layout/admin-layout.component';
+import { AdminDashboardComponent } from './Fearure/Inner/admin-dashboard/admin-dashboard.component';
+import { AdminUsersComponent } from './Fearure/Inner/admin-users/admin-users.component';
+import { AdminAddUserComponent } from './Fearure/Inner/admin-add-user/admin-add-user.component';
 
 export const routes: Routes = [
-  { path: 'home', component: HomeComponent, canActivate: [AuthGuard] }, // Protect home with AuthGuard
-  { path: 'login', component: LoginComponent, canActivate: [LoginGuard] }, // Prevent logged-in users from accessing login
-  { path: 'register', component: RegisterUserComponent, canActivate: [LoginGuard] },
-  { path: 'forget-password', component: ForgetPasswordComponent, canActivate: [LoginGuard] },
-  { path: 'reset-password', component: ResetPasswordComponent, canActivate: [LoginGuard] },
-  { path: 'check-your-email', component: CheckYourEmailComponent, canActivate: [LoginGuard] },
+  { path: 'home', component: HomeComponent,
+    //  canActivate: [AuthGuard] 
+  },
+  { path: 'login', component: LoginComponent,
+    //  canActivate: [LoginGuard]
+     },
+  {
+    path: 'register',
+    component: RegisterUserComponent,
+    // canActivate: [LoginGuard],
+  },
+  {
+    path: 'forget-password',
+    component: ForgetPasswordComponent,
+    // canActivate: [LoginGuard],
+  },
+  {
+    path: 'reset-password',
+    component: ResetPasswordComponent,
+    // canActivate: [LoginGuard],
+  },
+  {
+    path: 'check-your-email',
+    component: CheckYourEmailComponent,
+    // canActivate: [LoginGuard],
+  },
+  // { path: '', redirectTo: '/home', pathMatch: 'full' },
+  // { path: '**', redirectTo: '/home', pathMatch: 'full' },
+  {
+    path: 'admin',
+    component: AdminLayoutComponent, // Wraps Sidebar & Content
+    children: [
+      { path: 'dashboard', component: AdminDashboardComponent },
+      { path: 'users', component: AdminUsersComponent },
+      // { path: 'add-user', component: AdminAddUserComponent },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: '**', redirectTo: 'dashboard', pathMatch: 'full' },
+    ],
+  },
+
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', redirectTo: '/home', pathMatch: 'full' },
 ];
