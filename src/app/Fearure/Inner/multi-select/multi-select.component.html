@@ -5,15 +5,16 @@
       (click)="toggleDropdown()">
       <div class="truncate">
         <!-- If any roles are selected, display them; otherwise, show placeholder -->
-        <span *ngIf="selectedOptions.length; else placeholderTemplate">
-            {{ selectedOptionNames }}
+        <span>
+          <span *ngIf="options.length > 0" class="text-gray-400">Select roles</span>
+          <span *ngIf="options.length == 0"  class="text-gray-400">No more roles</span>
         </span>
-        <ng-template #placeholderTemplate>
+        <!-- <ng-template #placeholderTemplate>
           <span class="text-gray-400">Select roles</span>
-        </ng-template>
+        </ng-template> -->
       </div>
       <!-- Arrow Icon -->
-      <svg 
+      <svg  *ngIf="options.length > 0"
         class="w-4 h-4 transform" 
         [ngClass]="{'rotate-180': dropdownOpen}" 
         xmlns="http://www.w3.org/2000/svg" 
@@ -26,8 +27,8 @@
 
     <!-- Dropdown menu -->
     <div 
-      *ngIf="dropdownOpen" 
-      class="absolute top-full left-0 right-0 z-10 bg-white border border-gray-300 rounded-lg mt-1 p-2 shadow-lg">
+      *ngIf="dropdownOpen && options.length > 0" 
+      class="absolute w-max top-full left-0 right-0 z-10 bg-white border border-gray-300 rounded-lg mt-1 p-2 shadow-lg">
       <div *ngFor="let option of options" class="flex items-center py-1">
         <input
           type="checkbox"

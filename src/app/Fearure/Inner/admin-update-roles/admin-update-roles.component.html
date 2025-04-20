@@ -1,0 +1,83 @@
+<div class="w-max flex align">
+    <table class="w-full w-max text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-white uppercase bg-gray-700 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+                <th scope="col" class="px-6 py-3">
+                    Admin name
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Email
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Phone Number
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Roles
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Select Roles
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Update Roles
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr 
+                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    {{selectedAdmin?.firstName+" "+selectedAdmin.lastName}}
+                </th>
+                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    {{selectedAdmin?.email}}
+                </td>
+                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    {{selectedAdmin?.phoneNumber}}
+                </td>
+                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    <div class="dropdown relative" dropdown [open]="adminRolesOpen" (clickOutside)="closeAdminDropDown()">
+                        <div (click)="toggleAdminRolesDropdown()"
+                            class="inline-flex cursor-pointer items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                            <a href="javascript:void(0)">Roles</a>
+                            <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 10 6">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="m1 1 4 4 4-4" />
+                            </svg>
+                        </div>
+                        <div class="dropdown-menu absolute z-10 mt-2  max-h-60  bg-white shadow-md border border-gray-200 rounded-md" *ngIf="adminRolesOpen">
+                            <div *ngFor="let role of selectedAdmin.roles" class="w-full dropdown-item w-full bg-gray-100 my-1 rounded-lg p-2">
+                                <div class="w-full dropdown-item w-full flex justify-between  ">
+                                    <a class="" (click)="closeAdminDropDown()">{{ role }}</a>
+                                    <svg (click)="deleteRoleFromAdmin(role)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-trash cursor-pointer text-red-700 font-xl" viewBox="0 0 16 16">
+                                <path
+                                    d="M5.5 5.5A.5.5 0 0 1 6 6v7a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5.5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0V6zm3 .5a.5.5 0 0 1 .5-.5H13a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5H9.5a.5.5 0 0 1-.5-.5V6z" />
+                                <path fill-rule="evenodd"
+                                    d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4H2.5a1 1 0 0 1 0-2h3.1a1 1 0 0 1 .98-.804l.34-.036a1 1 0 0 1 .98.804h2.36a1 1 0 0 1 .98-.804l.34-.036A1 1 0 0 1 11.9 1h3.1a1 1 0 0 1 1 1zm-10.5 1H2.5v9A1 1 0 0 0 3.5 14h6a1 1 0 0 0 1-1V4z" />
+                            </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    <!-- {{selectedAdmin?.status}} -->
+                     <app-multi-select [options]="notassignedRoles" (selectionChange)="onRolesChange($event)">
+                    </app-multi-select>
+                </td>
+                <td class="px-6   py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    <!-- <a> -->
+                    <div class="flex w-max gap-2">
+                        <button type="submit" (click)="onUpdateRoles()"
+                        [disabled]="!selectedNewRoles.length"
+                            class="py-3.5 mr-2 px-7 text-sm font-semibold tracking-wider rounded-md text-white bg-gray-600 focus:outline-none">
+                            Update
+                        </button>
+                    </div>
+                    <!-- </a> -->
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
