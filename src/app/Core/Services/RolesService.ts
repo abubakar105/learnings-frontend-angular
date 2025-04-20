@@ -17,4 +17,13 @@ export class RolesService {
   assignOrAddAdminAndRoles(body:any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/Roles/AssignOrAddRoleToUser`, body);
   }
+  getAllNotAssignedRoles(roleId: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/Roles/GetAllRolesNotAssigned/${roleId}`);
+  }  
+  UpdateRolesForAdmin(body:any): Observable<any> {
+  return this.http.post<any>(`${this.baseUrl}/Roles/AssignOrAddRoleToUser`, body);
+}
+DeleteRolesFromAdmin(body:any): Observable<any> {
+  return this.http.post<any>(`${this.baseUrl}/Roles/DeleteUserRole`, body);
+}
 }
