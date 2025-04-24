@@ -14,6 +14,12 @@ export class RolesService {
   getAllRoles(): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/Roles/GetAllRoles`);
   }
+  createRole(body:any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/Roles/CreateRole`,body);
+  }
+  addPermissionsToRole(body:any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/Roles/AssignPermissionsToRole`,body);
+  }
   assignOrAddAdminAndRoles(body:any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/Roles/AssignOrAddRoleToUser`, body);
   }
