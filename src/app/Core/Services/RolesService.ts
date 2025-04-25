@@ -32,4 +32,13 @@ export class RolesService {
 DeleteRolesFromAdmin(body:any): Observable<any> {
   return this.http.post<any>(`${this.baseUrl}/Roles/DeleteUserRole`, body);
 }
+GetAllNotAssignedPermissionsForRole(roleId: string): Observable<any> {
+  return this.http.get<any>(`${this.baseUrl}/Roles/GetAllNotAssignedPermissionsForRole/${roleId}`);
+}
+UpdateRoleWithPermissions(roleId:string,body: any): Observable<any> {
+  return this.http.put<any>(`${this.baseUrl}/Roles/UpdateRoleWithPermissions/${roleId}`, body);
+}
+RemovePermissionFromRole(body: any): Observable<any> {
+  return this.http.post<any>(`${this.baseUrl}/Roles/RemovePermissionFromRole`, body);
+}
 }
