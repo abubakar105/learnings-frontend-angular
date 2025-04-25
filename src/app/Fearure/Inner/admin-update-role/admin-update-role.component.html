@@ -1,0 +1,110 @@
+<div class="w-max flex align">
+    <form [formGroup]="createRoleForm" (ngSubmit)="onAddRoles()">
+    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <thead class="min-w-100 text-xs text-white uppercase bg-gray-700 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+                <th scope="col" class="px-6 py-3">
+                    Role name
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Role Description
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Select Permissions For Role
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Roles Permissions
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Add Role
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr 
+                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    <div>
+                        <!-- <label class="text-gray-800 text-sm mb-2 block">Role Name</label> -->
+                        <input formControlName="roleName" name="name" type="text"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Enter role name" />
+                        <div *ngIf="createRoleForm.get('roleName')?.invalid &&createRoleForm.get('roleName')?.touched">
+                            <small *ngIf="createRoleForm.get('roleName')?.errors?.['required']" class="text-red-700">Role
+                                name is
+                                required.</small>
+                            <small *ngIf="createRoleForm.get('roleName')?.errors?.['maxlength']" class="text-red-700">Role
+                                name cannot too long.</small>
+                            <small *ngIf="createRoleForm.get('roleName')?.errors?.['minlength']" class="text-red-700">Role
+                                    name cannot too short.</small>
+                        </div>
+                    </div>
+                </th>
+                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    <div>
+                        <!-- <label class="text-gray-800 text-sm mb-2 block">Role Name</label> -->
+                        <input formControlName="roleDescription" name="roleDescription" type="text"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Enter role name" />
+                        <div *ngIf="createRoleForm.get('roleDescription')?.invalid &&createRoleForm.get('roleDescription')?.touched">
+                            <small *ngIf="createRoleForm.get('roleDescription')?.errors?.['required']" class="text-red-700">Role
+                                name is
+                                required.</small>
+                            <small *ngIf="createRoleForm.get('roleDescription')?.errors?.['maxlength']" class="text-red-700">Role
+                                name cannot too long.</small>
+                            <small *ngIf="createRoleForm.get('roleDescription')?.errors?.['minlength']" class="text-red-700">Role
+                                    name cannot too short.</small>
+                        </div>
+                    </div>
+               </td>
+               <td cclass="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"  *ngFor="let role of permissionsList; let i = index">
+                <!-- <div class=""> -->
+                    <div class="dropdown relative" dropdown [open]="rolesPermissionsOpenMap.get(i) ?? false"
+                    (clickOutside)="closeRolePermissionsDropDown(i)">
+                    <div (click)="toggleRolePermissionsDropdown(i)"
+                    class="inline-flex cursor-pointer items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                        <a href="javascript:void(0)">Permissions</a>
+                        <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" d="m1 1 4 4 4-4" />
+                        </svg>
+                    </div>
+                    <div  *ngIf="role?.permissions.length>0" class="dropdown-menu absolute z-10 mt-2  max-h-60  bg-white shadow-md border border-gray-200 rounded-md" >
+                        <div *ngFor="let r of role?.permissions"  class="w-full dropdown-item w-full bg-gray-100 my-1 rounded-lg ">
+                            <div  class="w-100 w-full flex justify-between  ">
+                                <a class="" (click)="closeRolePermissionsDropDown(i)">{{ r.permissionName }}</a>
+                                <svg (click)="deletePermissionFromRole(r)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-trash cursor-pointer text-red-700 font-xl" viewBox="0 0 16 16">
+                                <path
+                                    d="M5.5 5.5A.5.5 0 0 1 6 6v7a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5.5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0V6zm3 .5a.5.5 0 0 1 .5-.5H13a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5H9.5a.5.5 0 0 1-.5-.5V6z" />
+                                <path fill-rule="evenodd"
+                                    d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4H2.5a1 1 0 0 1 0-2h3.1a1 1 0 0 1 .98-.804l.34-.036a1 1 0 0 1 .98.804h2.36a1 1 0 0 1 .98-.804l.34-.036A1 1 0 0 1 11.9 1h3.1a1 1 0 0 1 1 1zm-10.5 1H2.5v9A1 1 0 0 0 3.5 14h6a1 1 0 0 0 1-1V4z" />
+                            </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- </div> -->
+            </td>
+                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    <!-- {{selectedAdmin?.status}} -->
+                    <!-- <label class="text-gray-800 text-sm mb-2 block">Select Permissions for Role</label> -->
+                     <app-multi-select [options]="allPermissions" (selectionChange)="onPermissionChange($event)">
+                    </app-multi-select>
+                </td>
+                <td class="px-6   py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    <!-- <a> -->
+                    <div class="flex w-max gap-2">
+                        <button  type="submit" (ngSubmit)="onAddRoles()" 
+                            class="py-3.5 mr-2 px-7 text-sm font-semibold tracking-wider rounded-md text-white bg-gray-600 focus:outline-none">
+                            Update Role
+                        </button>
+                    </div>
+                    <!-- </a> -->
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    </form>
+</div>
