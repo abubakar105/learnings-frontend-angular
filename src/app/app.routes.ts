@@ -13,9 +13,13 @@ import { AdminUsersComponent } from './Fearure/Inner/admin-users/admin-users.com
 import { AdminAddUserComponent } from './Fearure/Inner/admin-add-user/admin-add-user.component';
 import { AdminRolesComponent } from './Fearure/Inner/admin-roles/admin-roles.component';
 import { AddProductComponent } from './Fearure/Inner/Products/add-product/add-product.component';
+import { ShowAllProductsComponent } from './Fearure/Inner/User/show-all-products/show-all-products.component';
 
 export const routes: Routes = [
-  { path: 'home', component: HomeComponent,
+  { path: '', component: HomeComponent,
+    // children: [
+    //   { path: 'products', component: ShowAllProductsComponent },
+    // ]
     //  canActivate: [AuthGuard] 
   },
   { path: 'login', component: LoginComponent,

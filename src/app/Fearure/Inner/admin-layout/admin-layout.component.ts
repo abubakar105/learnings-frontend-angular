@@ -7,7 +7,7 @@ import { AdminNavbarComponent } from "../admin-navbar/admin-navbar.component";
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [AdminSidebarComponent, RouterModule, AdminUsersComponent, AdminNavbarComponent],
+  imports: [AdminSidebarComponent, RouterModule,  AdminNavbarComponent],
   templateUrl: './admin-layout.component.html',
   styleUrl: './admin-layout.component.css'
 })
