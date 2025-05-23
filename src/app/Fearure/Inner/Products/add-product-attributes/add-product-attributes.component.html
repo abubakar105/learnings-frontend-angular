@@ -1,0 +1,27 @@
+<div>
+    <label class="font-medium">Variation</label>
+
+    <div *ngFor="let row of productAddedAttributesList; let i = index;trackBy: trackById" class="flex items-center mt-4 space-x-4">
+        <select [(ngModel)]="row.attributeId" (ngModelChange)="onAttributeChange(i)" class="border rounded px-3 py-2">
+            <option [ngValue]="null" disabled>Select attribute</option>
+            <option *ngFor="let attr of ProductsLookupsAttributes" [ngValue]="attr.id"
+                [disabled]="isDisabledAttribute(i, attr.id) && attr.id !== row.attributeId">
+                {{ attr.name }}
+            </option>
+        </select>
+
+        <input [(ngModel)]="row.attributeValue" type="text" placeholder="Enter value"
+            class="flex-1 border rounded px-3 py-2" />
+
+        <button (click)="removeAttribute(i)" class="text-white bg-red-600 hover:bg-red-800 rounded px-3 py-1 text-xl">
+            &times;
+        </button>
+    </div>
+
+    <div class="mt-4">
+        <button (click)="addAttribute()"
+            class="bg-green-600 hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded px-4 py-2">
+            + Add another attribute
+        </button>
+    </div>
+</div>
