@@ -1,0 +1,11 @@
+::ng-deep .NgxEditor__Content {
+    min-height: 200px !important;
+    max-height: 200px;
+    overflow-y: auto !important;
+  }
+
+ ::ng-deep .NgxEditor__MenuBar{
+    background: rgb(243 244 246 / var(--tw-bg-opacity, 1)) !important;
+    border-radius: 0.5rem !important;
+
+ }

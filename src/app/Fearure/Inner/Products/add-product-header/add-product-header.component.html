@@ -1,0 +1,29 @@
+<div class="max-w h-auto space-y-4">
+    <h3 class="mb-2 text-2xl font-bold text-gray-900">Card Heading</h3>
+
+    <div>
+        <label for="product-name" class="block text-sm font-medium text-gray-700">Product Name</label>
+        <input id="product-name" name="name" type="text" [(ngModel)]="product.name"
+            [ngModelOptions]="{ updateOn: 'blur' }" (blur)="emitChange()"
+            class="w-full my-2 block outline-none p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter product name" required />
+    </div>
+
+    <div>
+        <label for="product-sku" class="block text-sm font-medium text-gray-700">SKU</label>
+        <input id="product-sku" name="sku" type="text" [(ngModel)]="product.sku" [ngModelOptions]="{ updateOn: 'blur' }"
+            (blur)="emitChange()"
+            class="w-full my-2 block outline-none p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter SKU" required />
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium text-gray-700">Description</label>
+
+        <ngx-editor-menu [editor]="editor"></ngx-editor-menu>
+
+        <ngx-editor [editor]="editor" [(ngModel)]="descriptionHtml" [ngModelOptions]="{ updateOn: 'blur' }"
+            (blur)="onDescriptionBlur()" [placeholder]="'Type product description...'"
+            class="border rounded-lg p-2 mt-1"></ngx-editor>
+    </div>
+</div>

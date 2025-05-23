@@ -18,12 +18,13 @@ export class TokenInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     const token = this.authService.getToken();
     const exp = this.authService.isTokenExpired();
-
+//debugger
     const clonedRequest = this.addContentTypeHeader(req);
 
     var isAuthApi = this.shouldAddToken(req);
     if (!isAuthApi) {
-      if (token && !exp) {
+      // if (token && !exp) {
+        if (!token || exp) {
         const requestWithToken = this.addToken(clonedRequest, token);
         return next.handle(requestWithToken);
       } else if (token && exp) {
@@ -55,7 +56,9 @@ export class TokenInterceptor implements HttpInterceptor {
     req: HttpRequest<any>,
     token: string | null
   ): HttpRequest<any> {
-    if (token) {
+    if (!token) {
+      // if (token) {
+      token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmZWE3ZjAzNy01MzEzLTQyNTktYjJhZi1iYjRiMDUwZjdkNzYiLCJlbWFpbCI6ImFidWJha2FyLjU5MTMyQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlN1cGVyQWRtaW4iLCJuYmYiOjE3NDc5Nzg5NjksImV4cCI6MTc0Nzk5MDk2OSwiaXNzIjoiaHR0cHM6Ly95b3VyZG9tYWluLmNvbSIsImF1ZCI6Imh0dHBzOi8veW91cmRvbWFpbi5jb20ifQ.OqqljIXzwRIWAX1aF_mKVS0lJbxElqT8gy5FpdFqI5Q';
       return req.clone({
         headers: req.headers.set('Authorization', `Bearer ${token}`),
       });
@@ -69,72 +72,3 @@ export class TokenInterceptor implements HttpInterceptor {
     });
   }
 }
-
-// import { Injectable } from '@angular/core';
-// import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse } from '@angular/common/http';
-// import { Observable, throwError, BehaviorSubject } from 'rxjs';
-// import { catchError, filter, take, switchMap } from 'rxjs/operators';
-// import { AuthService } from '../Services/login.service';
-// @Injectable()
-// export class TokenInterceptor implements HttpInterceptor {
-
-//   private isRefreshing = false;
-
-//   private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
-
-//   constructor(private authService: AuthService) {}
-
-//   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-//     let currentUser = this.authService.currentUserValue;
-//     if (currentUser && currentUser.accessToken) {
-//       request = this.addToken(request, currentUser.accessToken);
-//     }
-
-//     return next.handle(request).pipe(
-//       catchError(error => {
-//         if (error instanceof HttpErrorResponse && error.status === 401) {
-//           return this.handle401Error(request, next);
-//         } else {
-//           return throwError(error);
-//         }
-//       })
-//     );
-//   }
-
-//   private addToken(request: HttpRequest<any>, token: string) {
-//     return request.clone({
-//       setHeaders: {
-//         Authorization: `Bearer ${token}`
-//       }
-//     });
-//   }
-
-//   private handle401Error(request: HttpRequest<any>, next: HttpHandler) {
-
-//     if (!this.isRefreshing) {
-//       this.isRefreshing = true;
-//       this.refreshTokenSubject.next(null);
-
-//       return this.authService.refreshToken().pipe(
-//         switchMap((user: any) => {
-//           this.isRefreshing = false;
-//           this.refreshTokenSubject.next(user.accessToken);
-//           return next.handle(this.addToken(request, user.accessToken));
-//         }),
-//         catchError((err) => {
-//           this.isRefreshing = false;
-//           this.authService.logout();
-//           return throwError(err);
-//         })
-//       );
-//     } else {
-//       return this.refreshTokenSubject.pipe(
-//         filter(token => token != null),
-//         take(1),
-//         switchMap(accessToken => {
-//           return next.handle(this.addToken(request, accessToken));
-//         })
-//       );
-//     }
-//   }
-// }

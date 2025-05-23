@@ -12,6 +12,7 @@ import { AdminDashboardComponent } from './Fearure/Inner/admin-dashboard/admin-d
 import { AdminUsersComponent } from './Fearure/Inner/admin-users/admin-users.component';
 import { AdminAddUserComponent } from './Fearure/Inner/admin-add-user/admin-add-user.component';
 import { AdminRolesComponent } from './Fearure/Inner/admin-roles/admin-roles.component';
+import { AddProductComponent } from './Fearure/Inner/Products/add-product/add-product.component';
 
 export const routes: Routes = [
   { path: 'home', component: HomeComponent,
@@ -49,6 +50,7 @@ export const routes: Routes = [
       { path: 'dashboard', component: AdminDashboardComponent },
       { path: 'users', component: AdminUsersComponent },
       { path: 'role-managemnt', component: AdminRolesComponent },
+      { path: 'products', component: AddProductComponent },
       // { path: 'add-user', component: AdminAddUserComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: '**', redirectTo: 'dashboard', pathMatch: 'full' },
