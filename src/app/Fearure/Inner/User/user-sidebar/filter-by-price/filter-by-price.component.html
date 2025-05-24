@@ -1,0 +1,58 @@
+<div class="max-w space-y-4 px-4 py-2 bg-white dark:bg-gray-800">
+  <label class="block text-xl font-medium text-gray-700 dark:text-gray-300">By Pricing</label>
+
+  <div class="flex space-x-2 items-center">
+    <div class="flex-1">
+      <label class="block text-sm text-gray-600 dark:text-gray-400">Min Price</label>
+      <input
+        type="number"
+        [min]="rangeMin"
+        [max]="maxPrice"
+        [step]="step"
+        [(ngModel)]="minPrice"
+        (ngModelChange)="onMinInput($event)"
+        class="w-full border rounded p-1 text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700"
+      />
+    </div>
+    <div class="flex-1">
+      <label class="block text-sm text-gray-600 dark:text-gray-400">Max Price</label>
+      <input
+        type="number"
+        [min]="minPrice"
+        [max]="rangeMax"
+        [step]="step"
+        [(ngModel)]="maxPrice"
+        (ngModelChange)="onMaxInput($event)"
+        class="w-full border rounded p-1 text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700"
+      />
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <input
+      type="range"
+      [min]="rangeMin"
+      [max]="rangeMax"
+      [step]="step"
+      [(ngModel)]="minPrice"
+      (input)="onMinInput(minPrice)"
+      class="w-full h-2 accent-indigo-600"
+    />
+    <input
+      type="range"
+      [min]="rangeMin"
+      [max]="rangeMax"
+      [step]="step"
+      [(ngModel)]="maxPrice"
+      (input)="onMaxInput(maxPrice)"
+      class="w-full h-2 accent-indigo-600 -mt-2"
+    />
+  </div>
+
+  <!-- Display current range -->
+  <!-- <div class="flex justify-between text-sm text-gray-700 dark:text-gray-300 mt-2">
+    <span>{{ rangeMin }}</span>
+    <span>{{ minPrice }} - {{ maxPrice }}</span>
+    <span>{{ rangeMax }}</span>
+  </div> -->
+</div>
