@@ -14,4 +14,7 @@ export class ProductCategoryService {
   getAllProductCategoryService(): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/Categories`);
   }
+  getAllProductsParentCategory(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/Categories/AllParentCategories`);
+  }
 }

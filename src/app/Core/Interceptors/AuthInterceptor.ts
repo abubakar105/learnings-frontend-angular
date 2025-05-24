@@ -58,7 +58,7 @@ export class TokenInterceptor implements HttpInterceptor {
   ): HttpRequest<any> {
     if (!token) {
       // if (token) {
-      token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmZWE3ZjAzNy01MzEzLTQyNTktYjJhZi1iYjRiMDUwZjdkNzYiLCJlbWFpbCI6ImFidWJha2FyLjU5MTMyQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlN1cGVyQWRtaW4iLCJuYmYiOjE3NDc5Nzg5NjksImV4cCI6MTc0Nzk5MDk2OSwiaXNzIjoiaHR0cHM6Ly95b3VyZG9tYWluLmNvbSIsImF1ZCI6Imh0dHBzOi8veW91cmRvbWFpbi5jb20ifQ.OqqljIXzwRIWAX1aF_mKVS0lJbxElqT8gy5FpdFqI5Q';
+      token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmZWE3ZjAzNy01MzEzLTQyNTktYjJhZi1iYjRiMDUwZjdkNzYiLCJlbWFpbCI6ImFidWJha2FyLjU5MTMyQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlN1cGVyQWRtaW4iLCJuYmYiOjE3NDgwMjkyNzQsImV4cCI6MTc0ODA0MTI3NCwiaXNzIjoiaHR0cHM6Ly95b3VyZG9tYWluLmNvbSIsImF1ZCI6Imh0dHBzOi8veW91cmRvbWFpbi5jb20ifQ.z--BHDajDf2QfdW0zbVSlc7U2DFFs6PEDot0-OsAf2Q';
       return req.clone({
         headers: req.headers.set('Authorization', `Bearer ${token}`),
       });
