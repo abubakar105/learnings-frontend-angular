@@ -1,0 +1,29 @@
+<!-- filter-by-gender.component.html -->
+<div class="max-w space-y-4">
+  <label class="block text-xl font-medium text-gray-700">By Gender</label>
+
+  <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+    <ul class="space-y-2 font-medium cursor-pointer">
+      <li
+        *ngFor="let cat of categoryList; trackBy: trackById"
+        class="cursor-pointer flex items-center"
+      >
+        <input
+          type="radio"
+          [id]="'gender-' + cat.id"
+          name="gender"
+          [value]="cat.id"
+          [checked]="cat.id === selectedGenderId"
+          (change)="onGenderChange(cat.id)"
+          class="cursor-pointer form-radio text-indigo-600 h-4 w-4"
+        />
+        <label
+          [for]="'gender-' + cat.id"
+          class="cursor-pointer ms-2 text-gray-900 dark:text-white hover:underline"
+        >
+          {{ cat.name }}
+        </label>
+      </li>
+    </ul>
+  </div>
+</div>
