@@ -1,0 +1,97 @@
+<!-- products-details.component.html -->
+<div *ngIf="selectedProduct; else loading" class="max-w-6xl my-4 mx-auto p-6 bg-white rounded-xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-10">
+  <!-- Left: Main + Thumbnails -->
+  <div class="">
+    <div class="rounded-xl overflow-hidden">
+      <img
+        [src]="mainImage"
+        [alt]="selectedProduct.name"
+        class="w-full rounded-xl shadow-md"
+      />
+    </div>
+
+    <div class="mt-4 flex space-x-3 overflow-x-auto">
+      <img
+        *ngFor="let thumb of selectedProduct.imageUrls"
+        [src]="thumb"
+        [alt]="selectedProduct.name"
+        class="w-16 h-16 object-cover rounded-md cursor-pointer border border-gray-300 hover:border-blue-500"
+        (click)="onThumbnailClick(thumb)"
+      />
+    </div>
+  </div>
+
+  <!-- Right: Details -->
+  <div class="space-y-4">
+    <!-- Stock & Category -->
+    <div class="flex items-center space-x-2">
+      <span
+        [ngClass]=" selectedProduct.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+        class="text-xs font-semibold px-2 py-1 rounded"
+      >
+        {{ selectedProduct.isActive ? 'In Stock' : 'Out of Stock' }}
+      </span>
+      <span class="text-sm text-gray-400">
+        <!-- replace with real category name if available -->
+        {{ productCategory || 'No category' }}
+        <!-- {{ selectedProduct.categoryIds.length ? ('Category ID: ' + selectedProduct.categoryIds[0].childCategoryId) : '' }} -->
+      </span>
+    </div>
+
+    <!-- Name & Description -->
+    <h2 class="text-2xl font-semibold text-gray-800">{{ selectedProduct.name }}</h2>
+    <p class="text-gray-500 text-sm">{{ selectedProduct.description || 'No description available.' }}</p>
+
+    <!-- Price -->
+    <div class="space-x-2">
+      <span class="text-2xl font-bold text-purple-600">${{ selectedProduct.price }}</span>
+    </div>
+
+    <!-- Attributes -->
+    <div *ngIf="selectedProduct.attributes?.length" class="space-y-1">
+    <label class="text-2xl font-semibold text-gray-800">{{ selectedProduct.name }}</label>
+      <div *ngFor="let attr of selectedProduct.lookupValues" class="flex text-sm">
+        <h3 class="font-bold mx-2">{{ attr.name }}:</h3>
+        <span *ngFor="let val of attr.values ">{{ val.value }}</span>
+      </div>
+    </div>
+
+    <!-- Quantity Selector -->
+    <div class="flex items-center space-x-4">
+      <span class="text-sm font-medium text-gray-700">QTY:</span>
+      <div class="flex items-center border rounded px-2">
+        <button (click)="decreaseQty()" class="px-2 py-1 text-gray-500">−</button>
+        <span class="px-2">{{ qty }}</span>
+        <button (click)="increaseQty()" class="px-2 py-1 text-gray-500">+</button>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex space-x-4 mt-4">
+      <button
+        class="bg-indigo-600 text-white px-6 py-2 rounded-lg shadow hover:bg-indigo-700"
+        (click)="buyNow()"
+      >
+        Buy Now
+      </button>
+      <button
+        class="bg-pink-500 text-white px-6 py-2 rounded-lg shadow hover:bg-pink-600"
+        (click)="addToCart()"
+      >
+        Add to Cart
+      </button>
+    </div>
+
+    <!-- Delivery Info -->
+    <div class="pt-4 text-sm text-gray-500">
+      <p>Dispatched in 2-3 weeks</p>
+      <!-- <p class="underline text-gray-400 text-xs">Why the longer time for delivery?</p> -->
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="text-center py-20 text-gray-500">
+    Loading product details…
+  </div>
+</ng-template>

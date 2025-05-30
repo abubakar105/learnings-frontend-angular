@@ -1,78 +1,45 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { ProductCardComponent } from "./product-card/product-card.component";
+import { ProductCardComponent } from './product-card/product-card.component';
+import { ProductService } from '../../../../Core/Services/ProductService';
+import { ToastService } from '../../../../Core/Services/ToastService';
+import { ProductsDetailsComponent } from "./products-details/products-details.component";
+import { NavigationExtras, Router } from '@angular/router';
 
 @Component({
   selector: 'app-show-all-products',
   standalone: true,
-  imports: [CommonModule, ProductCardComponent],
+  imports: [CommonModule, ProductCardComponent, ProductsDetailsComponent],
   templateUrl: './show-all-products.component.html',
-  styleUrl: './show-all-products.component.css'
+  styleUrl: './show-all-products.component.css',
 })
 export class ShowAllProductsComponent {
-products: any[] = [
-     {
-      name: 'Retro Controller',
-      price: 199,
-      originalPrice: 249,
-      rating: 4,
-      imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlrod7F8Vz0ezWmt_id0rzf4sR4BGvGsIIkA&s'
-    },
-    {
-      name: 'Vintage Headphones',
-      price: 89,
-      originalPrice: 120,
-      rating: 5,
-      imageUrl: 'https://via.placeholder.com/300x200.png?text=Headphones'
-    },
-    {
-      name: 'Arcade Machine',
-      price: 799,
-      originalPrice: 899,
-      rating: 3,
-      imageUrl: 'https://via.placeholder.com/300x200.png?text=Arcade+Machine'
-    },
-    {
-      name: 'Gaming Chair',
-      price: 150,
-      originalPrice: 200,
-      rating: 4,
-      imageUrl: 'https://via.placeholder.com/300x200.png?text=Gaming+Chair'
-    },
-    {
-      name: 'LED Monitor',
-      price: 299,
-      originalPrice: 349,
-      rating: 5,
-      imageUrl: 'https://via.placeholder.com/300x200.png?text=LED+Monitor'
-    },
-    {
-      name: 'Mechanical Keyboard',
-      price: 120,
-      originalPrice: 150,
-      rating: 4,
-      imageUrl: 'https://via.placeholder.com/300x200.png?text=Mechanical+Keyboard'
-    },
-    {
-      name: 'Gaming Mouse',
-      price: 60,
-      originalPrice: 80,
-      rating: 4,
-      imageUrl: 'https://via.placeholder.com/300x200.png?text=Gaming+Mouse'
-    },
-    {
-      name: 'Mouse Pad',
-      price: 20,
-      originalPrice: 25,
-      rating: 3,
-      imageUrl: 'https://via.placeholder.com/300x200.png?text=Mouse+Pad'
-    },
-    {
-      name: 'VR Headset',
-      price: 399,
-      originalPrice: 499,
-      rating: 5,
-      imageUrl: 'https://via.placeholder.com/300x200.png?text=VR+Headset'
-    }
-  ];
+  products: any[] = [];
+
+  constructor(
+    private productService: ProductService,
+    private toast: ToastService,
+    private router: Router
+  ) {}
+
+  ngOnInit() {
+    this.fetchProducts();
+  }
+  goToDetail(productId:string){
+    this.router.navigate([`products/${productId}`]);
+  }
+  fetchProducts() {
+    this.productService.getAllProducts().subscribe({
+      next: (res) => {
+        if (res.status === 200) {
+          this.products = res.data;
+        } else {
+          this.toast.error('Failed to load products', 'Error');
+        }
+      },
+      error: (err) => {
+        this.toast.error('Failed to load products', 'Error');
+      },
+    });
+  }
 }

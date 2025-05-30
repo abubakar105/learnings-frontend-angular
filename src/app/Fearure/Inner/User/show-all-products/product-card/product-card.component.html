@@ -1,8 +1,8 @@
-<div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-4 relative overflow-hidden">
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md border p-4 relative overflow-hidden">
   <!-- Product image -->
   <img
-    [src]="product.imageUrl"
-    [alt]="product.name"
+    [src]="product.imageUrls[0]"
+    [alt]="product.name[0]"
     class="w-full h-48 object-cover transform transition-transform duration-200 hover:scale-110 cursor-pointer"
   />
 
