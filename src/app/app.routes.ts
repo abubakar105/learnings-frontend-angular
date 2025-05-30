@@ -15,17 +15,28 @@ import { AdminRolesComponent } from './Fearure/Inner/admin-roles/admin-roles.com
 import { AddProductComponent } from './Fearure/Inner/Products/add-product/add-product.component';
 import { ShowAllProductsComponent } from './Fearure/Inner/User/show-all-products/show-all-products.component';
 import { ProductsDetailsComponent } from './Fearure/Inner/User/show-all-products/products-details/products-details.component';
+import { CheckoutDetailsComponent } from './Fearure/Inner/User/checkout/checkout-details.component';
 
 export const routes: Routes = [
-  { path: '',  component: HomeComponent,
+  {
+    path: '',
+    component: HomeComponent,
     children: [
       { path: 'products', component: ShowAllProductsComponent },
-      { path: 'products/:id', component:ProductsDetailsComponent },
-    ]
+      { path: 'products/:id', component: ProductsDetailsComponent },
+      {
+        path: 'checkout',
+        component: CheckoutDetailsComponent,
+        // canActivate: [LoginGuard],
+      },
+    ],
   },
-  { path: 'login', component: LoginComponent,
+
+  {
+    path: 'login',
+    component: LoginComponent,
     //  canActivate: [LoginGuard]
-     },
+  },
   {
     path: 'register',
     component: RegisterUserComponent,

@@ -1,0 +1,83 @@
+<div class="max-w-full m-4 mx-4 mx-auto p-6 bg-white rounded-lg shadow">
+  <!-- Stepper -->
+  <div class="flex items-center justify-between mb-8">
+    <ng-container *ngFor="let step of steps; let i = index">
+      <!-- Circle -->
+      <div class="flex-10 text-center">
+        <div
+          class="mx-auto w-8 h-8 flex items-center justify-center rounded-full transition-colors duration-300 ease-in-out"
+          [ngClass]="{
+            'bg-indigo-500 text-white': i <= currentStep,
+            'bg-gray-200 text-gray-600': i > currentStep
+          }"
+        >
+          {{ i + 1 }}
+        </div>
+        <p
+          class="mt-2 text-sm transition-colors duration-300 ease-in-out"
+          [ngClass]="{
+            'text-indigo-600': i <= currentStep,
+            'text-gray-500': i > currentStep
+          }"
+        >
+          {{ step }}
+        </p>
+      </div>
+
+      <!-- Connector -->
+      <ng-container *ngIf="i < steps.length - 1">
+        <div
+          class="flex-1 -mx-1 h-2 rounded-full transition-colors duration-300 ease-in-out"
+          [ngClass]="{
+            'bg-indigo-500': i < currentStep,
+            'bg-gray-200': i >= currentStep
+          }"
+        ></div>
+      </ng-container>
+    </ng-container>
+  </div>
+
+  <!-- addrress details -->
+     <app-billing-and-address *ngIf="currentStep === 1">
+
+  </app-billing-and-address>
+  <!-- Cart Table -->
+  <app-cart  *ngIf="currentStep === 0">
+    
+  </app-cart>
+
+  <!-- Order Summary -->
+  <div class="border rounded-lg p-6 mb-8 bg-gray-50"  *ngIf="currentStep === 1 || currentStep === 0">
+    <h2 class="text-lg font-semibold mb-4">Order Summary</h2>
+    <div class="flex justify-between mb-2">
+      <span class="text-gray-600">Sub Total</span>
+      <span>${{ subTotal }}</span>
+    </div>
+    <div class="flex justify-between mb-2">
+      <span class="text-gray-600">Discount 5%</span>
+      <span class="text-red-500">-${{ discountAmount | number:'1.0-0' }}</span>
+    </div>
+    <div class="flex justify-between mb-4">
+      <span class="text-gray-600">Shipping</span>
+      <span>Free</span>
+    </div>
+    <div class="flex justify-between font-semibold text-lg">
+      <span>Total</span>
+      <span>${{ total | number:'1.0-0' }}</span>
+    </div>
+  </div>
+
+
+
+
+
+  <!-- Navigation Buttons -->
+  <div class="flex justify-between">
+    <button (click)="prevStep()" [disabled]="currentStep === 0" class="px-6 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50">
+      Previous
+    </button>
+    <button (click)="nextStep()" [disabled]="currentStep === steps.length - 1" class="px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:opacity-50">
+      Next
+    </button>
+  </div>
+</div>
