@@ -14,8 +14,17 @@ export class ProductService {
   getAllLookupAttributes(): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/ProductsLookUpAttribute`);
   }
+  getLookUpValue(body:any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/ProductsLookUpAttribute/lookupValue`,body);
+  }
   addProduct(body:any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/Products`, body);
+  }
+  getAllProducts(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/Products`);
+  }
+  getProductById(id:any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/Products/${id}`);
   }
   uploadFile(file: File): Observable<string> {
     const form = new FormData();

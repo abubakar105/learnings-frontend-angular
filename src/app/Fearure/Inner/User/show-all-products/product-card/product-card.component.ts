@@ -7,7 +7,7 @@ export interface Product {
   price: number;
   originalPrice?: number;
   rating: number; // 0-5
-  imageUrl: string;
+  imageUrls: string;
 }
 
 @Component({
@@ -18,7 +18,7 @@ export interface Product {
   styleUrls: ['./product-card.component.css']
 })
 export class ProductCardComponent {
-  @Input() product!: Product;
+  @Input() product!: any;
 
   get stars(): number[] {
     return [1, 2, 3, 4, 5];
