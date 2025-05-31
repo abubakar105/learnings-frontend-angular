@@ -1,0 +1,510 @@
+<!-- user-profile.component.html -->
+<div class="max-w-4xl mx-auto p-4 space-y-6">
+  <!-- ========== Header Card (Display & Change‐Password Toggle) ========== -->
+  <div class="border bg-white rounded-lg p-6 mb-6">
+    <!-- ---------- Display Mode (Header with 3 Buttons) ---------- -->
+    <ng-container *ngIf="!editingProfile; else editFormStub">
+      <div class="flex flex-col items-center">
+        <!-- Avatar -->
+        <img
+         src="https://bootstrapdemos.adminmart.com/matdash/dist/assets/images/profile/user-1.jpg"
+          alt="User Avatar"
+          class="w-24 h-24 rounded-full object-cover border-2 border-indigo-200 mb-4"
+        />
+
+        <!-- Name & Join Date -->
+        <h2 class="text-2xl font-semibold text-gray-800">{{ user.name }}</h2>
+        <p class="text-sm text-gray-500 mb-4">
+          Member since {{ user.joinDate | date: 'MMMM d, y' }}
+        </p>
+
+        <!-- Action Buttons: Edit / (Change Password & Delete if no change form open) -->
+        <div class="flex flex-wrap justify-center space-x-4">
+          <!-- Edit Profile (always visible when not editing) -->
+          <button
+            (click)="toggleEditProfile()"
+            class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors duration-200"
+          >
+            Edit Profile
+          </button>
+
+          <!-- Change Password (hidden if change form is open) -->
+          <button
+            *ngIf="!showChangePasswordForm"
+            (click)="toggleChangePasswordForm()"
+            class="px-4 py-2 border border-indigo-600 text-indigo-600 rounded hover:bg-indigo-50 transition-colors duration-200"
+          >
+            Change Password
+          </button>
+
+          <!-- Delete Account (hidden if change form is open) -->
+          <button
+            *ngIf="!showChangePasswordForm"
+            (click)="onDeleteAccount()"
+            class="px-4 py-2 border border-red-600 text-red-600 rounded hover:bg-red-50 transition-colors duration-200"
+          >
+            Delete Account
+          </button>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ---------- Edit Mode (stub—actual form is below) ---------- -->
+    <ng-template #editFormStub></ng-template>
+  </div>
+
+  <!-- ========== Change Password Card (only if showChangePasswordForm = true) ========== -->
+  <!-- ========== Change Password Card (only if showChangePasswordForm = true) ========== -->
+<ng-container *ngIf="showChangePasswordForm">
+  <div class="border bg-white rounded-lg p-6 mb-6">
+    <!-- Title & Subtext -->
+    <h3 class="text-xl font-semibold text-gray-800 mb-1">Change Password</h3>
+    <p class="text-sm text-gray-500 mb-6">
+      To change your password please confirm here
+    </p>
+
+    <form
+      [formGroup]="changePasswordForm"
+      (ngSubmit)="onSubmitChangePassword()"
+      class="space-y-6"
+    >
+      <!-- Current Password -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">
+          Current Password
+        </label>
+        <input
+          type="password"
+          formControlName="currentPassword"
+          class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+          placeholder="Enter current password"
+        />
+        <div
+          *ngIf="
+            cpf['currentPassword'].invalid &&
+            (cpf['currentPassword'].touched || cpf['currentPassword'].dirty)
+          "
+          class="mt-1 text-red-600 text-sm"
+        >
+          <small *ngIf="cpf['currentPassword'].errors?.['required']">
+            Current Password is required.
+          </small>
+        </div>
+      </div>
+
+      <!-- New Password -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">
+          New Password
+        </label>
+        <input
+          type="password"
+          formControlName="newPassword"
+          class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+          placeholder="Enter new password"
+        />
+        <div
+          *ngIf="
+            cpf['newPassword'].invalid &&
+            (cpf['newPassword'].touched || cpf['newPassword'].dirty)
+          "
+          class="mt-1 text-red-600 text-sm"
+        >
+          <small *ngIf="cpf['newPassword'].errors?.['required']">
+            New Password is required.
+          </small>
+          <small
+            *ngIf="
+              !cpf['newPassword'].errors?.['required'] &&
+              cpf['newPassword'].errors?.['length']
+            "
+            class="block"
+          >
+            Password must be at least 8 characters long.
+          </small>
+          <small
+            *ngIf="
+              !cpf['newPassword'].errors?.['required'] &&
+              cpf['newPassword'].errors?.['uppercase']
+            "
+            class="block"
+          >
+            Must contain at least one uppercase letter.
+          </small>
+          <small
+            *ngIf="
+              !cpf['newPassword'].errors?.['required'] &&
+              cpf['newPassword'].errors?.['lowercase']
+            "
+            class="block"
+          >
+            Must contain at least one lowercase letter.
+          </small>
+          <small
+            *ngIf="
+              !cpf['newPassword'].errors?.['required'] &&
+              cpf['newPassword'].errors?.['number']
+            "
+            class="block"
+          >
+            Must contain at least one number.
+          </small>
+          <small
+            *ngIf="
+              !cpf['newPassword'].errors?.['required'] &&
+              cpf['newPassword'].errors?.['specialChar']
+            "
+            class="block"
+          >
+            Must contain at least one special character.
+          </small>
+        </div>
+      </div>
+
+      <!-- Confirm Password -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">
+          Confirm Password
+        </label>
+        <input
+          type="password"
+          formControlName="confirmPassword"
+          class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+          placeholder="Re-enter new password"
+        />
+        <div
+          *ngIf="
+            (cpf['confirmPassword'].touched || cpf['confirmPassword'].dirty) &&
+            changePasswordForm.hasError('passwordsDoNotMatch')
+          "
+          class="mt-1 text-red-600 text-sm"
+        >
+          <small>Passwords do not match.</small>
+        </div>
+        <div
+          *ngIf="
+            cpf['confirmPassword'].invalid &&
+            cpf['confirmPassword'].touched &&
+            !changePasswordForm.hasError('passwordsDoNotMatch')
+          "
+          class="mt-1 text-red-600 text-sm"
+        >
+          <small *ngIf="cpf['confirmPassword'].errors?.['required']">
+            Confirm Password is required.
+          </small>
+        </div>
+      </div>
+
+      <!-- Save & Cancel Buttons (single row) -->
+      <div class="flex flex-wrap justify-end space-x-4">
+        <button
+          type="submit"
+          class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
+        >
+          Save Password
+        </button>
+        <button
+          type="button"
+          (click)="toggleChangePasswordForm()"
+          class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-container>
+
+
+  <!-- ========== Edit Profile Card (only if editingProfile = true) ========== -->
+  <ng-container *ngIf="editingProfile">
+    <div class="border bg-white rounded-lg p-6 mb-6">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">Edit Profile</h3>
+      <form
+        [formGroup]="profileForm"
+        (ngSubmit)="onSaveProfile()"
+        class="space-y-6"
+      >
+        <!-- Form Fields in Two‐Column Layout on md+, Single Column on small -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Full Name -->
+          <div>
+            <label class="block text-sm font-medium text-gray-600">Full Name</label>
+            <input
+              type="text"
+              formControlName="name"
+              class="mt-1 w-full p-2 border rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+            />
+            <div
+              *ngIf="
+                pf['name'].invalid && (pf['name'].touched || pf['name'].dirty)
+              "
+              class="mt-1 text-red-600 text-sm"
+            >
+              <small *ngIf="pf['name'].errors?.['required']">
+                Full Name is required.
+              </small>
+              <small *ngIf="pf['name'].errors?.['maxlength']">
+                Full Name cannot exceed 50 characters.
+              </small>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label class="block text-sm font-medium text-gray-600">Email Address</label>
+            <input
+              type="email"
+              formControlName="email"
+              class="mt-1 w-full p-2 border rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+            />
+            <div
+              *ngIf="
+                pf['email'].invalid && (pf['email'].touched || pf['email'].dirty)
+              "
+              class="mt-1 text-red-600 text-sm"
+            >
+              <small *ngIf="pf['email'].errors?.['required']">
+                Email is required.
+              </small>
+              <small *ngIf="pf['email'].errors?.['email']">
+                Invalid email format.
+              </small>
+              <small
+                *ngIf="
+                  pf['email'].errors?.['pattern'] && !pf['email'].errors?.['email']
+                "
+              >
+                Email does not match required pattern.
+              </small>
+            </div>
+          </div>
+
+          <!-- Phone Number -->
+          <div>
+            <label class="block text-sm font-medium text-gray-600">Phone Number</label>
+            <input
+              type="text"
+              formControlName="phone"
+              class="mt-1 w-full p-2 border rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+            />
+            <div
+              *ngIf="
+                pf['phone'].invalid && (pf['phone'].touched || pf['phone'].dirty)
+              "
+              class="mt-1 text-red-600 text-sm"
+            >
+              <small *ngIf="pf['phone'].errors?.['required']">
+                Phone Number is required.
+              </small>
+              <small *ngIf="pf['phone'].errors?.['pattern']">
+                Invalid phone number format.
+              </small>
+            </div>
+          </div>
+
+          <!-- Shipping Address -->
+          <div>
+            <label class="block text-sm font-medium text-gray-600">Shipping Address</label>
+            <textarea
+              formControlName="shippingAddress"
+              rows="2"
+              class="mt-1 w-full p-2 border rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+            ></textarea>
+            <div
+              *ngIf="
+                pf['shippingAddress'].invalid &&
+                (pf['shippingAddress'].touched || pf['shippingAddress'].dirty)
+              "
+              class="mt-1 text-red-600 text-sm"
+            >
+              <small *ngIf="pf['shippingAddress'].errors?.['required']">
+                Shipping Address is required.
+              </small>
+              <small *ngIf="pf['shippingAddress'].errors?.['maxlength']">
+                Shipping Address cannot exceed 200 characters.
+              </small>
+            </div>
+          </div>
+
+          <!-- Billing Address -->
+          <div>
+            <label class="block text-sm font-medium text-gray-600">Billing Address</label>
+            <textarea
+              formControlName="billingAddress"
+              rows="2"
+              class="mt-1 w-full p-2 border rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+            ></textarea>
+            <div
+              *ngIf="
+                pf['billingAddress'].invalid &&
+                (pf['billingAddress'].touched || pf['billingAddress'].dirty)
+              "
+              class="mt-1 text-red-600 text-sm"
+            >
+              <small *ngIf="pf['billingAddress'].errors?.['required']">
+                Billing Address is required.
+              </small>
+              <small *ngIf="pf['billingAddress'].errors?.['maxlength']">
+                Billing Address cannot exceed 200 characters.
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Save & Cancel Buttons -->
+        <div class="flex flex-wrap justify-center space-x-4">
+          <button
+            type="submit"
+            class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors duration-200"
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            (click)="toggleEditProfile()"
+            class="px-6 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-100 transition-colors duration-200"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </ng-container>
+
+  <!-- ========== Personal Information Card ========== -->
+  <div class="border bg-white rounded-lg p-6">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">Personal Information</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700">
+      <div>
+        <label class="block text-sm font-medium text-gray-600">Full Name</label>
+        <p class="mt-1 text-gray-800">{{ user.name }}</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-600">Email Address</label>
+        <p class="mt-1 text-gray-800">{{ user.email }}</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-600">Phone Number</label>
+        <p class="mt-1 text-gray-800">{{ user.phone }}</p>
+      </div>
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-600">Shipping Address</label>
+        <p class="mt-1 text-gray-800">{{ user.shippingAddress }}</p>
+      </div>
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-600">Billing Address</label>
+        <p class="mt-1 text-gray-800">{{ user.billingAddress }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== Payment Methods & Orders (unchanged) ========== -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Saved Payment Methods Card -->
+    <div class="border bg-white rounded-lg p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-gray-800">Saved Payment Methods</h3>
+        <button
+          (click)="togglePaymentMethods()"
+          class="text-indigo-600 hover:underline text-sm"
+        >
+          {{ showPaymentMethods ? 'Hide' : 'Show' }}
+        </button>
+      </div>
+
+      <div *ngIf="showPaymentMethods; else hiddenPayments">
+        <ul class="space-y-4">
+          <li
+            *ngFor="let card of paymentMethods"
+            class="flex items-center justify-between border p-4 rounded hover:shadow-sm transition-shadow duration-200"
+          >
+            <div class="flex items-center space-x-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-gray-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 10h18M3 14h18M4 6h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2z"
+                />
+              </svg>
+              <div>
+                <p class="text-gray-800 font-medium">
+                  {{ card.type }} **** {{ card.last4 }}
+                </p>
+                <p class="text-sm text-gray-500">Expires {{ card.expiry }}</p>
+              </div>
+            </div>
+            <button
+              class="text-red-600 hover:underline text-sm"
+              (click)="onRemovePaymentMethod(card.id)"
+            >
+              Remove
+            </button>
+          </li>
+
+          <li>
+            <button
+              (click)="onAddPaymentMethod()"
+              class="w-full flex items-center justify-center space-x-2 px-4 py-2 border border-indigo-600 text-indigo-600 rounded hover:bg-indigo-50 transition-colors duration-200"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span>Add New Payment Method</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <ng-template #hiddenPayments>
+        <p class="text-gray-500 text-sm">Click “Show” to view saved payment methods.</p>
+      </ng-template>
+    </div>
+
+    <!-- Recent Orders Card -->
+    <div class="border bg-white rounded-lg p-6">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">Recent Orders</h3>
+      <ul class="divide-y divide-gray-200">
+        <li
+          *ngFor="let order of recentOrders"
+          class="py-4 flex items-start justify-between"
+        >
+          <div>
+            <p class="font-medium text-gray-800">#{{ order.number }}</p>
+            <p class="text-sm text-gray-500">
+              Placed on {{ order.date | date: 'MMM d, y' }}
+            </p>
+          </div>
+          <div class="text-right">
+            <p class="text-gray-800">{{ order.total | currency }}</p>
+            <p class="text-sm text-indigo-600">Status: {{ order.status }}</p>
+          </div>
+        </li>
+        <li class="py-4 flex items-center justify-center">
+          <button
+            (click)="onViewAllOrders()"
+            class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors duration-200"
+          >
+            View All Orders
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

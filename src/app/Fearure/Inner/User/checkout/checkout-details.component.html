@@ -1,4 +1,4 @@
-<div class="max-w-full m-4 mx-4 mx-auto p-6 bg-white rounded-lg shadow">
+<div class="max-w-full m-4 !mx-4 mx-auto p-6 bg-white rounded-lg shadow">
   <!-- Stepper -->
   <div class="flex items-center justify-between mb-8">
     <ng-container *ngFor="let step of steps; let i = index">
@@ -43,7 +43,7 @@
   </app-billing-and-address>
   <!-- Cart Table -->
   <app-cart  *ngIf="currentStep === 0">
-    
+
   </app-cart>
 
   <!-- Order Summary -->

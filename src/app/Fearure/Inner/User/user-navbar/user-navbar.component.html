@@ -1,52 +1,66 @@
- <nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-    <div class="px-3 py-3 lg:px-5 lg:pl-3">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center justify-start rtl:justify-end">
-          <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar" type="button" class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-              <span class="sr-only">Open sidebar</span>
-              <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                 <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
-              </svg>
-           </button>
-          <a href="https://flowbite.com" class="flex ms-2 md:me-24">
-            <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 me-3" alt="FlowBite Logo" />
-            <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Flowbite</span>
-          </a>
-        </div>
-        <div class="flex items-center">
-            <div class="flex items-center ms-3">
-              <div>
-                <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
-                  <span class="sr-only">Open user menu</span>
-                  <img class="w-8 h-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo">
-                </button>
-              </div>
-              <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
-                <div class="px-4 py-3" role="none">
-                  <p class="text-sm text-gray-900 dark:text-white" role="none">
-                    Neil Sims
+<nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+  <div class="px-3 py-3 lg:px-5 lg:pl-3">
+    <div class="flex items-center justify-between">
+
+      <!-- Left Side -->
+      <div class="flex items-center justify-start rtl:justify-end">
+        <button type="button"
+          class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+            <path clip-rule="evenodd" fill-rule="evenodd"
+              d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z">
+            </path>
+          </svg>
+        </button>
+        <a class="flex ms-2 md:me-24">
+          <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 me-3" alt="Logo" />
+          <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Flowbite</span>
+        </a>
+      </div>
+
+      <!-- Right Side -->
+      <div class="relative flex items-center space-x-4">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="m21.067 11.857l-.642-.388zm-8.924-8.924l-.388-.642zM21.25 12A9.25 9.25 0 0 1 12 21.25v1.5c5.937 0 10.75-4.813 10.75-10.75zM12 21.25A9.25 9.25 0 0 1 2.75 12h-1.5c0 5.937 4.813 10.75 10.75 10.75zM2.75 12A9.25 9.25 0 0 1 12 2.75v-1.5C6.063 1.25 1.25 6.063 1.25 12zm12.75 2.25A5.75 5.75 0 0 1 9.75 8.5h-1.5a7.25 7.25 0 0 0 7.25 7.25zm4.925-2.781A5.75 5.75 0 0 1 15.5 14.25v1.5a7.25 7.25 0 0 0 6.21-3.505zM9.75 8.5a5.75 5.75 0 0 1 2.781-4.925l-.776-1.284A7.25 7.25 0 0 0 8.25 8.5zM12 2.75a.38.38 0 0 1-.268-.118a.3.3 0 0 1-.082-.155c-.004-.031-.002-.121.105-.186l.776 1.284c.503-.304.665-.861.606-1.299c-.062-.455-.42-1.026-1.137-1.026zm9.71 9.495c-.066.107-.156.109-.187.105a.3.3 0 0 1-.155-.082a.38.38 0 0 1-.118-.268h1.5c0-.717-.571-1.075-1.026-1.137c-.438-.059-.995.103-1.299.606z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18.75 9.71v-.705C18.75 5.136 15.726 2 12 2S5.25 5.136 5.25 9.005v.705a4.4 4.4 0 0 1-.692 2.375L3.45 13.81c-1.011 1.575-.239 3.716 1.52 4.214a25.8 25.8 0 0 0 14.06 0c1.759-.498 2.531-2.639 1.52-4.213l-1.108-1.725a4.4 4.4 0 0 1-.693-2.375Z"></path><path stroke-linecap="round" d="M7.5 19c.655 1.748 2.422 3 4.5 3s3.845-1.252 4.5-3M12 6v4" opacity=".5"></path></g></svg> 
+        <img src="	https://bootstrapdemos.adminmart.com/matdash/dist/assets/images/flag/icon-flag-en.svg" class="w-6 h-6 rounded-full" alt="UK Flag" />
+
+        <!-- Profile Dropdown (on hover) -->
+        <div class="relative group">
+          <!-- Avatar Button -->
+          <div class="flex items-center cursor-pointer">
+            <img class="w-10 h-10 rounded-full" src="https://bootstrapdemos.adminmart.com/matdash/dist/assets/images/profile/user-1.jpg"
+              alt="User photo">
+          </div>
+
+          <div
+            class="absolute right-0 top-full  mt-1 w-72 bg-white rounded-xl shadow-lg z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto">
+            <div class="px-4 py-3 border-b">
+              <div class="flex items-center space-x-3">
+                <img class="w-12 h-12 rounded-full" src="https://bootstrapdemos.adminmart.com/matdash/dist/assets/images/profile/user-1.jpg"
+                  alt="User photo">
+                <div>
+                  <p class="font-semibold text-gray-800 flex items-center">
+                    David McMichael <span class="ml-1 text-green-500 text-sm">Pro</span>
                   </p>
-                  <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
-                    neil.simsflowbite.com
-                  </p>
+                  <p class="text-sm text-gray-500">davidwrappixel.com</p>
                 </div>
-                <ul class="py-1" role="none">
-                  <li>
-                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Dashboard</a>
-                  </li>
-                  <li>
-                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Settings</a>
-                  </li>
-                  <li>
-                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Earnings</a>
-                  </li>
-                  <li>
-                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>
-                  </li>
-                </ul>
               </div>
             </div>
+            <ul class="py-2 text-sm text-gray-700">
+              <li><a class="block px-4 py-2 hover:bg-gray-100">My Profile</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-100">My Subscription</a></li>
+              <li class="flex items-center justify-between px-4 py-2 hover:bg-gray-100">
+                <span>My Invoice</span>
+                <span class="bg-pink-200 text-pink-800 text-xs font-medium px-2 py-0.5 rounded-full">4</span>
+              </li>
+              <li><a class="block px-4 py-2 hover:bg-gray-100">Account Settings</a></li>
+              <li><a class="block px-4 py-2 hover:bg-gray-100">Sign Out</a></li>
+            </ul>
           </div>
+        </div>
+
       </div>
+
     </div>
-  </nav> 
+  </div>
+</nav>
