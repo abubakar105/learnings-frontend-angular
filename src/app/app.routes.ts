@@ -16,6 +16,7 @@ import { AddProductComponent } from './Fearure/Inner/Products/add-product/add-pr
 import { ShowAllProductsComponent } from './Fearure/Inner/User/show-all-products/show-all-products.component';
 import { ProductsDetailsComponent } from './Fearure/Inner/User/show-all-products/products-details/products-details.component';
 import { CheckoutDetailsComponent } from './Fearure/Inner/User/checkout/checkout-details.component';
+import { UserProfileComponent } from './Fearure/Inner/User/profile/user-profile/user-profile.component';
 
 export const routes: Routes = [
   {
@@ -29,8 +30,14 @@ export const routes: Routes = [
         component: CheckoutDetailsComponent,
         // canActivate: [LoginGuard],
       },
+      {
+    path: 'user/profile',
+    component: UserProfileComponent,
+    //  canActivate: [LoginGuard]
+  },
     ],
   },
+  
 
   {
     path: 'login',
