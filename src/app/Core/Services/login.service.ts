@@ -1,36 +1,49 @@
-// auth.service.ts
+// src/app/Core/Services/auth.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, catchError, filter, of, switchMap, tap, throwError } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {
+  BehaviorSubject,
+  Observable,
+  of,
+  throwError,
+  filter,
+  take,
+  switchMap,
+  tap,
+  catchError
+} from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../../enviornments/environment';
 
 interface AuthResponse {
-  token: string;
-  tokenExpiry: string;
-  refreshToken: string;
-  refreshTokenExpiry: string;
+  accessToken: string;
+  expires: string; // matches the backend JSON: { accessToken: "...", expires: "2025-06-01T11:33:11.6829602Z" }
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private baseUrl = environment.apiUrl;
-  private tokenSubject = new BehaviorSubject<string | null>(null);
-  private refreshTokenSubject = new BehaviorSubject<string | null>(null);
-  
+  private baseUrl = environment.apiUrl; // e.g. 'https://localhost:7195'
+  private accessTokenSubject = new BehaviorSubject<string | null>(null);
+  private tokenExpiryDate: Date | null = null;
   private isRefreshing = false;
 
-  constructor(private http: HttpClient, private router: Router) {}
-
-  login(credentials: { email: string; password: string }): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>('https://localhost:7195/User/login', credentials).pipe(
-      tap((res) => {
-        this.storeTokens(res);  
-      })
-    );
+  constructor(private http: HttpClient, private router: Router) {
+    // On service init, load any saved access token + expiry from localStorage (optional)
+    const storedToken = localStorage.getItem('accessToken');
+    const storedExpiry = localStorage.getItem('accessTokenExpiry');
+    if (storedToken && storedExpiry) {
+      this.accessTokenSubject.next(storedToken);
+      this.tokenExpiryDate = new Date(storedExpiry);
+    }
   }
+
+  /**
+   * Log in with { email, password }. Expects the server to:
+   *  • set an HttpOnly "refreshToken" cookie
+   *  • return JSON { accessToken, expires }
+   */
   duplicateUserCheck(email:any):Observable<any>{
     return this.http.post<any>(`${this.baseUrl}/User/duplicateUser`,email)
   }
@@ -46,149 +59,83 @@ export class AuthService {
   changePassword(resetPassword:any):Observable<any>{
     return this.http.post<any>(`${this.baseUrl}/User/ChangeForgetPassword`,resetPassword)
   }
-  private storeTokens(res: any) {
-    localStorage.setItem('token', res.token);
-    localStorage.setItem('tokenExpiry', res.expiration);
-    localStorage.setItem('refreshToken', res.refreshToken);
-    localStorage.setItem('refreshTokenExpiry', res.refreshTokenExpiration);
-
-    this.tokenSubject.next(res.token);
-    this.refreshTokenSubject.next(res.refreshToken);
-  }
-
-  getToken() {
-    return this.tokenSubject.value || localStorage.getItem('token');
-  }
-
-  getRefreshToken() {
-    return this.refreshTokenSubject.value || localStorage.getItem('refreshToken');
-  }
-
-  isTokenExpired(): boolean {
-    const expiry = new Date(localStorage.getItem('tokenExpiry') || '');
-    return new Date() > expiry;
-  }
-
-  refreshToken(): Observable<string> {
-    const refreshToken = localStorage.getItem('refreshToken');
-    if (!refreshToken) {
-      return throwError(() => new Error('Refresh token not found'));
-    }
-
-    if (this.isRefreshing) {
-      // Prevent multiple refresh token requests
-      return this.tokenSubject.asObservable().pipe(
-        filter((token): token is string => token !== null) // Ensure only non-null values are emitted
-      );
-    }
-
-    this.isRefreshing = true;
-
+  login(credentials: { email: string; password: string }): Observable<AuthResponse> {
     return this.http
-      .post<any>(
-        `${this.baseUrl}/User/refresh-token`,
-        { refreshToken },
+      .post<AuthResponse>(
+        `${this.baseUrl}/User/login`,
+        credentials,
+        { withCredentials: true } // ensure the HttpOnly cookie is stored by the browser
       )
       .pipe(
-        switchMap((response) => {
-          localStorage.clear();
-
-          localStorage.setItem('token', response.token);
-          localStorage.setItem('tokenExpiry', response.expiration);
-          localStorage.setItem('refreshToken', response.refreshToken);
-          localStorage.setItem(
-            'refreshTokenExpiry',
-            response.refreshTokenExpiration
-          );
-          this.tokenSubject.next(response.token);
-          this.isRefreshing = false;
-          return of(response.token);
-        }),
-        catchError((error) => {
-          this.isRefreshing = false;
-          localStorage.clear();
-          this.router.navigate(['/login']);
-          return throwError(() => error);
+        tap((res) => {
+          this.storeAccessToken(res.accessToken, res.expires);
         })
       );
   }
 
-  logout() {
-    localStorage.clear();
-    this.tokenSubject.next(null);
-    this.refreshTokenSubject.next(null);
+  /** Store the access token in memory and optionally in localStorage */
+  private storeAccessToken(jwt: string, expires: string) {
+    this.accessTokenSubject.next(jwt);
+    this.tokenExpiryDate = new Date(expires);
+    localStorage.setItem('accessToken', jwt);
+    localStorage.setItem('accessTokenExpiry', this.tokenExpiryDate.toISOString());
+  }
+
+  /** Returns the current access token or null */
+  getAccessToken(): string | null {
+    return this.accessTokenSubject.value;
+  }
+
+  /** Returns true if no expiry is stored or if now > expiry */
+  isAccessTokenExpired(): boolean {
+    if (!this.tokenExpiryDate) {
+      return true;
+    }
+    return new Date() > this.tokenExpiryDate;
+  }
+
+  /**
+   * Call /api/User/refresh-token with withCredentials so the browser
+   * automatically sends the HttpOnly refresh cookie. On success, store
+   * the new access token and return it. On failure, logout.
+   */
+  refreshAccessToken(): Observable<string> {
+    if (this.isRefreshing) {
+      // If a refresh is already in progress, wait for it to finish
+      return this.accessTokenSubject
+        .asObservable()
+        .pipe(
+          filter((tk): tk is string => tk !== null),
+          take(1)
+        );
+    }
+
+    this.isRefreshing = true;
+    return this.http
+      .post<AuthResponse>(
+        `${this.baseUrl}/User/refresh-token`,
+        {},
+        { withCredentials: true }
+      )
+      .pipe(
+        tap((res) => {
+          this.storeAccessToken(res.accessToken, res.expires);
+          this.isRefreshing = false;
+        }),
+        switchMap((res) => of(res.accessToken)),
+        catchError((err) => {
+          this.isRefreshing = false;
+          this.logout();
+          return throwError(() => err);
+        })
+      );
+  }
+
+  /** Clear everything and navigate to /login */
+  logout(): void {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('accessTokenExpiry');
+    this.accessTokenSubject.next(null);
     this.router.navigate(['/login']);
   }
 }
-
-// import { Injectable } from '@angular/core';
-// import { HttpClient, HttpHeaders } from '@angular/common/http';
-// import { BehaviorSubject, Observable } from 'rxjs';
-// import { map, catchError, switchMap } from 'rxjs/operators';
-
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class AuthService {
-//   private authUrl = 'https://localhost:7195/User';
-//   private currentUserSubject: BehaviorSubject<any>;
-//   public currentUser: Observable<any>;
-
-
-//   constructor(private http: HttpClient) {
-//     const storedUser = localStorage.getItem('currentUser');
-//     this.currentUserSubject = new BehaviorSubject<any>(
-//       storedUser ? JSON.parse(storedUser) : null
-//     );
-//     this.currentUser = this.currentUserSubject.asObservable();
-//   }
-
-
-//   public get currentUserValue() {
-//     return this.currentUserSubject.value;
-//   }
-
-
-//   login(username: any) {
-//     return this.http.post<any>(`${this.authUrl}/login`,  username )
-//       .pipe(
-//         map((user) => 
-//       {
-//           if (user && user.accessToken && user.refreshToken) {
-//             localStorage.setItem('currentUser', JSON.stringify(user));
-//             this.currentUserSubject.next(user);
-//           }
-//           return user;
-//         })
-//       );
-//   }
-
-
-
-//   logout() {
-//     localStorage.removeItem('currentUser');
-//     this.currentUserSubject.next(null);
-//   }
-
-
-
-//   refreshToken() {
-//     return this.http.post<any>(`${this.authUrl}/refresh-token`, {
-//       refreshToken: this.currentUserValue.refreshToken
-//     }).pipe(
-//       map((user) => {
-//         if (user && user.accessToken) {
-//           const currentUser = this.currentUserValue;
-//           currentUser.accessToken = user.accessToken;
-//           localStorage.setItem('currentUser', JSON.stringify(currentUser));
-//           this.currentUserSubject.next(currentUser);
-//         }
-//         return user;
-//       }),
-//       catchError((error) => {
-//         this.logout();
-//         throw error;
-//       })
-//     );
-//   }
-// }

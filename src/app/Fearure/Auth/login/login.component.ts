@@ -48,19 +48,21 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
   }
 
-  onSubmit(): void {
-    this.loginForm.markAllAsTouched();
-    
-    if (this.loginForm.valid) {
-      this.authService.login(this.loginForm.value).subscribe({
-        next: (response) => {
-          this.toastService.success('LogedIn Successful!', 'Success');
-          this.router.navigate(['/home']);
-        },
-        error: (error) => {
-          this.toastService.error('Invalid Email or Password!', 'Failed');
-        },
-      });
+   onSubmit(): void {
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
     }
+
+    this.authService.login(this.loginForm.value).subscribe({
+      next: (res) => {
+        // res.accessToken and res.expires are valid
+        this.toastService.success('Logged in successfully!', 'Success');
+        this.router.navigate(['/home']);
+      },
+      error: (err) => {
+        this.toastService.error('Invalid email or password!', 'Failed');
+      },
+    });
   }
 }
