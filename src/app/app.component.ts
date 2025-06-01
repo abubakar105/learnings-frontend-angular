@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
-import { SpinnerComponent } from "./Fearure/Inner/spinner/spinner.component";
+import { SpinnerComponent } from "./Fearure/shared/spinner/spinner.component";
 
 @Component({
   selector: 'app-root',
