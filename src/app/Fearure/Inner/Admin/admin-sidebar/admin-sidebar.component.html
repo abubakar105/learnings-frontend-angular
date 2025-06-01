@@ -8,6 +8,7 @@
       <!-- Dashboard -->
       <li>
         <a
+        *ngIf="authService.hasAnyRole('Admin', 'SuperAdmin')"
           [routerLink]="'/admin/dashboard'"
           routerLinkActive="bg-gray-100 dark:bg-gray-700"
           [routerLinkActiveOptions]="{ exact: true }"
@@ -36,6 +37,7 @@
       <!-- Users Management -->
       <li>
         <a
+        *ngIf="authService.hasAnyRole('SuperAdmin')"
           [routerLink]="'/admin/users-management'"
           routerLinkActive="bg-gray-100 dark:bg-gray-700"
           [routerLinkActiveOptions]="{ exact: true }"
@@ -61,6 +63,7 @@
       <!-- Roles Management -->
       <li>
         <a
+        *ngIf="authService.hasAnyRole('SuperAdmin', 'Admin')"
           [routerLink]="'/admin/role-management'"
           routerLinkActive="bg-gray-100 dark:bg-gray-700"
           [routerLinkActiveOptions]="{ exact: true }"
@@ -86,6 +89,7 @@
       <!-- Products Management -->
       <li>
         <a
+        *ngIf="authService.hasAnyRole('SuperAdmin','Admin')"
           [routerLink]="'/admin/products-management'"
           routerLinkActive="bg-gray-100 dark:bg-gray-700"
           [routerLinkActiveOptions]="{ exact: true }"

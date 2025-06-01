@@ -1,4 +1,4 @@
-// src/app/Core/Guards/auth.guard.ts
+// src/app/Core/Guards/guest.guard.ts
 import { Injectable } from '@angular/core';
 import {
   CanActivate,
@@ -11,7 +11,7 @@ import { AuthService } from '../Services/login.service';
 @Injectable({
   providedIn: 'root',
 })
-export class AuthGuard implements CanActivate {
+export class GuestGuard implements CanActivate {
   constructor(private auth: AuthService, private router: Router) {}
 
   canActivate(
@@ -21,10 +21,11 @@ export class AuthGuard implements CanActivate {
     const token = this.auth.getAccessToken();
 
     if (token && !this.auth.isAccessTokenExpired()) {
-      return true;
+      // Already logged in — redirect to home
+      this.router.navigate(['/user']);
+      return false;
     }
 
-    this.router.navigate(['/auth/login']);
-    return false;
+    return true;
   }
 }
