@@ -1,11 +1,14 @@
-import { Injectable } from '@angular/core';
+// src/app/Core/Interceptors/token.interceptor.ts
 import {
   HttpEvent,
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
+  HttpErrorResponse
 } from '@angular/common/http';
-import { Observable, catchError, switchMap, throwError } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Observable, throwError } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 import { AuthService } from '../Services/login.service';
 
 @Injectable()
@@ -16,59 +19,67 @@ export class TokenInterceptor implements HttpInterceptor {
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    const token = this.authService.getToken();
-    const exp = this.authService.isTokenExpired();
-//debugger
-    const clonedRequest = this.addContentTypeHeader(req);
-
-    var isAuthApi = this.shouldAddToken(req);
-    if (!isAuthApi) {
-      // if (token && !exp) {
-        if (!token || exp) {
-        const requestWithToken = this.addToken(clonedRequest, token);
-        return next.handle(requestWithToken);
-      } else if (token && exp) {
-        return this.authService.refreshToken().pipe(
-          switchMap((newToken) => {
-            const newRequest = this.addToken(clonedRequest, newToken);
-            return next.handle(newRequest);
-          }),
-          catchError((error) => {
-            return throwError(() => error);
-          })
-        );
-      }
-    }
-
-    return next.handle(clonedRequest);
-  }
-
-  private shouldAddToken(req: HttpRequest<any>): boolean {
-    const excludedUrls = [
-      '/api/User/login',
-      '/api/User/register',
-      '/api/User/refresh-token',
-    ];
-    return excludedUrls.some((url) => req.url.includes(url));
-  }
-
-  private addToken(
-    req: HttpRequest<any>,
-    token: string | null
-  ): HttpRequest<any> {
-    if (!token) {
-      // if (token) {
-      token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmZWE3ZjAzNy01MzEzLTQyNTktYjJhZi1iYjRiMDUwZjdkNzYiLCJlbWFpbCI6ImFidWJha2FyLjU5MTMyQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlN1cGVyQWRtaW4iLCJuYmYiOjE3NDg1MzY5NzEsImV4cCI6MTc0ODU0ODk3MSwiaXNzIjoiaHR0cHM6Ly95b3VyZG9tYWluLmNvbSIsImF1ZCI6Imh0dHBzOi8veW91cmRvbWFpbi5jb20ifQ.E_dDeJoux8J0T8775c7TwO1ZOYdX2oJh99FY82ncxIA';
-      return req.clone({
-        headers: req.headers.set('Authorization', `Bearer ${token}`),
-      });
-    }
-    return req;
-  }
-
-  private addContentTypeHeader(req: HttpRequest<any>): HttpRequest<any> {
-    return req.clone({
+    // 1. Add Content-Type header
+    const jsonReq = req.clone({
       headers: req.headers.set('Content-Type', 'application/json'),
     });
+
+    // 2. Check if this is an auth endpoint (login, register, or refresh)
+    if (this.isAuthEndpoint(jsonReq.url)) {
+      // Always send credentials (cookie) for login/refresh/register
+      const passThrough = jsonReq.clone({ withCredentials: true });
+      return next.handle(passThrough);
+    }
+
+    // 3. For any other request, attach the access token if valid
+    const token = this.authService.getAccessToken();
+    const expired = this.authService.isAccessTokenExpired();
+
+    let reqWithToken: HttpRequest<any>;
+    if (token && !expired) {
+      reqWithToken = jsonReq.clone({
+        setHeaders: { Authorization: `Bearer ${token}` },
+        withCredentials: true, // send cookie on every request
+      });
+    } else {
+      // No valid token: send request anyway with credentials so we can refresh on 401
+      reqWithToken = jsonReq.clone({ withCredentials: true });
+    }
+
+    // 4. Handle response; on 401, try to refresh once
+    return next.handle(reqWithToken).pipe(
+      catchError((err: HttpErrorResponse) => {
+        if (
+          err.status === 401 &&
+          !this.isAuthEndpoint(jsonReq.url)
+        ) {
+          // Attempt to refresh
+          return this.authService.refreshAccessToken().pipe(
+            switchMap((newToken) => {
+              const retryReq = req.clone({
+                setHeaders: { Authorization: `Bearer ${newToken}` },
+                withCredentials: true,
+              });
+              return next.handle(retryReq);
+            }),
+            catchError((refreshErr) => {
+              this.authService.logout();
+              return throwError(() => refreshErr);
+            })
+          );
+        }
+        return throwError(() => err);
+      })
+    );
+  }
+
+  private isAuthEndpoint(url: string): boolean {
+    return (
+      url.includes('/api/User/login') ||
+      url.includes('/api/User/register') ||
+      url.includes('/api/User/refresh-token') ||
+      url.includes('/api/User/forgot-password') ||
+      url.includes('/api/User/reset-password')
+    );
   }
 }
