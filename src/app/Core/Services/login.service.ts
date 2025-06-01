@@ -138,4 +138,46 @@ export class AuthService {
     this.accessTokenSubject.next(null);
     this.router.navigate(['/login']);
   }
+  getUserRoles(): string[] {
+    const token = this.getAccessToken();
+    if (!token) return [];
+
+    // JWT format: header.payload.signature (all Base64URL)
+    const parts = token.split('.');
+    if (parts.length !== 3) return [];
+
+    try {
+      // atob is Base64 (not Base64URL) so we replace URL chars
+      const payload = parts[1]
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+      // Decode base64 → string
+      const json = JSON.parse(atob(payload));
+      // .NET often uses "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+      const roleClaim = json['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+      if (!roleClaim) return [];
+
+      // The claim might be a string or an array of strings:
+      if (Array.isArray(roleClaim)) {
+        return roleClaim as string[];
+      } else if (typeof roleClaim === 'string') {
+        return [roleClaim];
+      }
+    } catch {
+      return [];
+    }
+    return [];
+  }
+
+  /** Returns true if the user has at least one of the specified roles */
+  hasAnyRole(...needed: string[]): boolean {
+    const roles = this.getUserRoles();
+    return roles.some(r => needed.includes(r));
+  }
+
+  /** Returns true if the user has all of the specified roles */
+  hasAllRoles(...needed: string[]): boolean {
+    const roles = this.getUserRoles();
+    return needed.every(r => roles.includes(r));
+  }
 }

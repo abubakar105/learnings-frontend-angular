@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { AuthService } from '../../../../Core/Services/login.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-navbar',
@@ -11,11 +13,17 @@ import { Component } from '@angular/core';
 export class UserNavbarComponent {
  dropdownOpen = false;
 
+   constructor(private authService: AuthService, private router: Router) {}
+
   toggleDropdown() {
     this.dropdownOpen = !this.dropdownOpen;
   }
 
   closeDropdown() {
     this.dropdownOpen = !this.dropdownOpen;
+  }
+  signOut() {
+    this.authService.logout();
+    this.router.navigate(['/auth/login']); 
   }
 }
