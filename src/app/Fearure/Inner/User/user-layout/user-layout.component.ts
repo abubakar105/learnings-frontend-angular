@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { UserNavbarComponent } from "../user-navbar/user-navbar.component";
+import { UserNavbarComponent } from "../../home/user-navbar/user-navbar.component";
 import { RouterModule } from '@angular/router';
-import { UserSidebarComponent } from "../user-sidebar/user-sidebar.component";
-import { ShowAllProductsComponent } from "../show-all-products/show-all-products.component";
+import { UserSidebarComponent } from "../../home/user-sidebar/user-sidebar.component";
+import { ShowAllProductsComponent } from "../../home/show-all-products/show-all-products.component";
 
 @Component({
   selector: 'app-user-layout',
