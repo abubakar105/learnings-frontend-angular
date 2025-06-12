@@ -22,8 +22,8 @@
 
         <ngx-editor-menu [editor]="editor"></ngx-editor-menu>
 
-        <ngx-editor [editor]="editor" [(ngModel)]="descriptionHtml" [ngModelOptions]="{ updateOn: 'blur' }"
-            (blur)="onDescriptionBlur()" [placeholder]="'Type product description...'"
+        <ngx-editor #ngxEditor [editor]="editor" [(ngModel)]="descriptionHtml" [ngModelOptions]="{ updateOn: 'blur' }"
+            (editorBlur)="onDescriptionBlur()" [placeholder]="'Type product description...'"
             class="border rounded-lg p-2 mt-1"></ngx-editor>
     </div>
 </div>

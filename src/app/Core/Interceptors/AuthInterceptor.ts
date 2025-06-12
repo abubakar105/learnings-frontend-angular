@@ -19,6 +19,10 @@ export class TokenInterceptor implements HttpInterceptor {
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
+
+     if (req.url.startsWith('https://api.cloudinary.com/v1_1/')) {
+      return next.handle(req);
+    }
     // 1. Add Content-Type header
     const jsonReq = req.clone({
       headers: req.headers.set('Content-Type', 'application/json'),
