@@ -26,6 +26,10 @@ export class ProductService {
   getProductById(id:any): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/Products/${id}`);
   }
+  uploadSignature(vals:any): Observable<any>{
+    let data = vals;
+    return this.http.post('https://api.cloudinary.com/v1_1/cloud_name/image/upload',data)
+  }
   uploadFile(file: File): Observable<string> {
     const form = new FormData();
     form.append('file', file);
