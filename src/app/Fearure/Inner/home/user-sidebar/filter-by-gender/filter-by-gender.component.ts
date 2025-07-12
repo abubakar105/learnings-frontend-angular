@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { ProductsFilterService } from '../../../../../Core/Services/ProductsFilterService';
 interface GenderOption{
   id: number;
   name: string;
@@ -12,6 +13,8 @@ interface GenderOption{
   styleUrl: './filter-by-gender.component.css'
 })
 export class FilterByGenderComponent {
+
+constructor(private filterSvc: ProductsFilterService) {}
 categoryList: GenderOption[] = [
     { id: 1, name: 'All' },
     { id: 2, name: 'Male' },
@@ -28,5 +31,7 @@ categoryList: GenderOption[] = [
   onGenderChange(id: number) {
     this.selectedGenderId = id;
     console.log('Selected gender:', this.categoryList.find(x => x.id === id)?.name);
+    const genderName = this.categoryList.find(x => x.id === id)?.name;
+    this.filterSvc.setGender(genderName || null);
   }
 }
