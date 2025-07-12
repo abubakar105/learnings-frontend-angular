@@ -14,8 +14,7 @@ export class SearchProdutcCategoryComponent implements OnInit {
   categoryList: any[] = [];
   constructor(
     private categorySerive: ProductCategoryService,
-    private toast: ToastService,
-    private filterSvc: ProductCategoryService
+    private toast: ToastService
   ) {}
   ngOnInit(): void {
     this.categorySerive.getAllProductsParentCategory().subscribe(

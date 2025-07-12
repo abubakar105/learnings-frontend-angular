@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ProductsFilterService } from '../../../../../Core/Services/ProductsFilterService';
 
 @Component({
   selector: 'app-filter-by-price',
@@ -17,14 +16,10 @@ export class FilterByPriceComponent {
   maxPrice: number = this.rangeMax;
   step: number = 100;
 
-    constructor(private filterSvc: ProductsFilterService) {}
-
   onMinInput(value: number) {
     this.minPrice = Math.min(Math.max(this.rangeMin, value), this.maxPrice);
-    this.filterSvc.setPriceRange({min: this.minPrice, max: this.maxPrice});
   }
   onMaxInput(value: number) {
     this.maxPrice = Math.max(Math.min(this.rangeMax, value), this.minPrice);
-    this.filterSvc.setPriceRange({min: this.minPrice, max: this.maxPrice});
   }
 }
