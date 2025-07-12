@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <div *ngIf="products$ | async as products; else noResults" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
         <app-product-card uct-card *ngFor="let p of products" [product]="p" (click)="goToDetail(p.productId)">
         </app-product-card>
     </div>

@@ -23,8 +23,13 @@ export class ProductService {
   addProduct(body: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/Products`, body);
   }
-  getAllProducts(search: HttpParams): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/ProductsOdata`, { params: search });
+  getAllProducts(search: string = ''): Observable<any> {
+    let params = new HttpParams();
+    if (search) {
+      const filterQuery = `contains(Name, '${search}') or contains(Description, '${search}')`;
+      params = params.set('$filter', filterQuery);
+    }
+    return this.http.get<any>(`${this.baseUrl}/ProductsOdata`, { params });
   }
   getProductById(id: any): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/Products/${id}`);

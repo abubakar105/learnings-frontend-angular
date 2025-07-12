@@ -1,13 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { ProductsFilterService } from '../../../../../Core/Services/ProductsFilterService';
 
 interface SortOption {
   attributeId: number;
   name: string;
   iconSvg: SafeHtml;
-  orderBy: string;
 }
 
 @Component({
@@ -41,39 +39,16 @@ export class SortByFilterComponent {
     `
   };
 
-  constructor(
-    private sanitizer: DomSanitizer,
-    private filterSvc: ProductsFilterService
-  ) {
-    this.sortByList = [
-  {
-    attributeId: 1,
-    name: 'Newest',
-    iconSvg: this.sanitizer.bypassSecurityTrustHtml(this.svgMap['Newest']),
-    orderBy: 'CreatedAt desc'
-  },
-  {
-    attributeId: 2,
-    name: 'Price: High-Low',
-    iconSvg: this.sanitizer.bypassSecurityTrustHtml(this.svgMap['Price: High-Low']),
-    orderBy: 'Price desc'
-  },
-  {
-    attributeId: 3,
-    name: 'Price: Low-High',
-    iconSvg: this.sanitizer.bypassSecurityTrustHtml(this.svgMap['Price: Low-High']),
-    orderBy: 'Price asc'
-  }
-];
-
-
+  constructor(private sanitizer: DomSanitizer) {
+    const names = ['Newest', 'Price: High-Low', 'Price: Low-High'];
+    this.sortByList = names.map((name, idx) => ({
+      attributeId: idx + 1,
+      name,
+      iconSvg: this.sanitizer.bypassSecurityTrustHtml(this.svgMap[name] || '')
+    }));
   }
 
   trackById(_: number, item: SortOption) {
     return item.attributeId;
-  }
-
-  selectSort(option: SortOption) {
-    this.filterSvc.setSort(option.orderBy as 'asc' | 'desc');
   }
 }
