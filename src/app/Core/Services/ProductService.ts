@@ -20,8 +20,8 @@ export class ProductService {
   addProduct(body:any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/Products`, body);
   }
-  getAllProducts(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/Products`);
+  getAllProducts(params : any): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/Products`, { params });
   }
   getProductById(id:any): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/Products/${id}`);
