@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ProductCategoryService } from '../../../../../Core/Services/ProductCategoryService';
 import { ToastService } from '../../../../../Core/Services/ToastService';
 import { CommonModule } from '@angular/common';
+import { ProductsFilterService } from '../../../../../Core/Services/ProductFilter';
 
 @Component({
   selector: 'app-search-produtc-category',
@@ -14,7 +15,8 @@ export class SearchProdutcCategoryComponent implements OnInit {
   categoryList: any[] = [];
   constructor(
     private categorySerive: ProductCategoryService,
-    private toast: ToastService
+    private toast: ToastService,
+    private filterService: ProductsFilterService
   ) {}
   ngOnInit(): void {
     this.categorySerive.getAllProductsParentCategory().subscribe(
@@ -29,6 +31,10 @@ export class SearchProdutcCategoryComponent implements OnInit {
         this.toast.error('Unable to load categories', 'Error');
       }
     );
+  }
+  onCategoryChange(categoryId: string) {
+    this.filterService.setCategoryIds([categoryId]);
+    console.log('Selected category:', this.categoryList.find(x => x.categoryId === categoryId)?.name);
   }
   trackById(_: number, item: any) {
   return item.attributeId;
