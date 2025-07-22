@@ -1,29 +1,46 @@
 <div class="max-w h-auto space-y-4">
     <h3 class="mb-2 text-2xl font-bold text-gray-900">Card Heading</h3>
+    <form [formGroup]="header">
+        <div>
+            <label for="product-name" class="block text-sm font-medium text-gray-700">Product Name</label>
+            <input formControlName="name" id="product-name" name="name" type="text"
+                class="w-full my-2 block outline-none p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter product name" />
+            <small *ngIf="header.get('name')?.touched && header.get('name')?.value === ''" class="text-red-700">Name is
+                required.</small>
+            <small *ngIf="header.get('name')?.errors?.['maxlength']" class="text-red-700">Name cannot exceed 50
+                characters.</small>
+            <small *ngIf="header.get('name')?.errors?.['minlength']" class="text-red-700">Name requires a minimum of 3
+                characters.</small>
+        </div>
 
-    <div>
-        <label for="product-name" class="block text-sm font-medium text-gray-700">Product Name</label>
-        <input id="product-name" name="name" type="text" [(ngModel)]="product.name"
-            [ngModelOptions]="{ updateOn: 'blur' }" (blur)="emitChange()"
-            class="w-full my-2 block outline-none p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter product name" required />
-    </div>
+        <div>
+            <label for="product-sku" class="block text-sm font-medium text-gray-700">SKU</label>
+            <input id="product-sku" name="sku" type="text" formControlName="sku"
+                class="w-full my-2 block outline-none p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter SKU" />
+            <small *ngIf="header.get('sku')?.touched && header.get('sku')?.value === ''" class="text-red-700">SKU is
+                required.</small>
+            <small *ngIf="header.get('sku')?.errors?.['maxlength']" class="text-red-700">SKU cannot exceed
+                20characters.</small>
+            <small *ngIf="header.get('sku')?.errors?.['minlength']" class="text-red-700">SKU requires a minimum of 3
+                characters.</small>
+        </div>
 
-    <div>
-        <label for="product-sku" class="block text-sm font-medium text-gray-700">SKU</label>
-        <input id="product-sku" name="sku" type="text" [(ngModel)]="product.sku" [ngModelOptions]="{ updateOn: 'blur' }"
-            (blur)="emitChange()"
-            class="w-full my-2 block outline-none p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter SKU" required />
-    </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Description</label>
 
-    <div>
-        <label class="block text-sm font-medium text-gray-700">Description</label>
+            <ngx-editor-menu [editor]="editor"></ngx-editor-menu>
 
-        <ngx-editor-menu [editor]="editor"></ngx-editor-menu>
+            <ngx-editor #ngxEditor [editor]="editor" formControlName="description" (editorBlur)="onDescriptionBlur()"
+                [placeholder]="'Type product description...'" class="border rounded-lg p-2 mt-1"></ngx-editor>
+            <small *ngIf="header.get('description')?.touched && header.get('description')?.value === ''"
+                class="text-red-700">Description is required.</small>
+            <small *ngIf="header.get('description')?.errors?.['maxlength']" class="text-red-700">Description cannot
+                exceed 500 characters.</small>
+            <small *ngIf="header.get('description')?.errors?.['minlength']" class="text-red-700">Description requires a
+                minimum of 50 characters.</small>
+        </div>
+    </form>
 
-        <ngx-editor #ngxEditor [editor]="editor" [(ngModel)]="descriptionHtml" [ngModelOptions]="{ updateOn: 'blur' }"
-            (editorBlur)="onDescriptionBlur()" [placeholder]="'Type product description...'"
-            class="border rounded-lg p-2 mt-1"></ngx-editor>
-    </div>
 </div>

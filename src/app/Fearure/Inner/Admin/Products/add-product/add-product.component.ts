@@ -1,8 +1,13 @@
 import { Component, OnInit, OnDestroy, ViewChild, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Editor } from 'ngx-editor';
-import { from, of } from 'rxjs';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { Editor, Validators } from 'ngx-editor';
+import { forkJoin, from, of } from 'rxjs';
 import {
   mergeMap,
   map,
@@ -38,6 +43,7 @@ import {
     AddProductAttributesComponent,
     AddProductPriceComponent,
     AddProductCategoryComponent,
+    ReactiveFormsModule,
   ],
   templateUrl: './add-product.component.html',
   styleUrls: ['./add-product.component.css'],
@@ -45,7 +51,8 @@ import {
 export class AddProductComponent implements OnInit, OnDestroy {
   editor!: Editor;
   imageFiles: File[] = [];
-
+  addProductForm: FormGroup;
+  CONCURRENCY = 5;
   product: ProductDto = {
     name: '',
     sku: '',
@@ -64,8 +71,51 @@ export class AddProductComponent implements OnInit, OnDestroy {
     private productService: ProductService,
     private toast: ToastService,
     private uploadSvc: ImageUploadService,
-    private ngZone: NgZone
-  ) {}
+    private ngZone: NgZone,
+    private fb: FormBuilder
+  ) {
+    this.addProductForm = this.fb.group({
+      headerForm: this.fb.group({
+        name: [
+          '',
+          [
+            Validators.required,
+            Validators.maxLength(50),
+            Validators.minLength(3),
+          ],
+        ],
+        sku: [
+          '',
+          [
+            Validators.required,
+            Validators.maxLength(20),
+            Validators.minLength(3),
+          ],
+        ],
+        description: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(50),
+            Validators.maxLength(500),
+          ],
+        ],
+      }),
+      priceForm: this.fb.group({
+        price: [null, [Validators.required]],
+      }),
+      categoryForm: this.fb.group({
+        parentCategoryId: [null, Validators.required],
+        subCategoryId: [null, Validators.required],
+      }),
+      imageForm: this.fb.group({
+        imageUrls: [[File], Validators.required],
+      }),
+      attributesForm: this.fb.group({
+        attributeWithValue: this.fb.array([]),
+      }),
+    });
+  }
 
   ngOnInit(): void {
     this.editor = new Editor();
@@ -75,6 +125,9 @@ export class AddProductComponent implements OnInit, OnDestroy {
     this.editor.destroy();
   }
 
+  childFormSend(formSelect: string): FormGroup {
+    return this.addProductForm.get(formSelect)! as FormGroup;
+  }
   get convertedAttributes(): AddedAttribute[] {
     return this.product.attributes.map((a) => ({
       attributeId: a.attributeTypeId,
@@ -92,58 +145,52 @@ export class AddProductComponent implements OnInit, OnDestroy {
   }
 
   saveProduct() {
-    // 1) build attributes payload
-    this.product.attributes = this.attrComp.productAddedAttributesList.map(
-      (attr) => ({
-        attributeTypeId: attr.attributeId!,
-        value: attr.attributeValue,
-      })
-    );
-
-    // 2) run the upload + save logic outside Angular’s zone
-    this.ngZone.runOutsideAngular(() => {
-      from(this.imageFiles)
-        .pipe(
-          // upload up to 3 in parallel, retry twice on error
-          mergeMap(
-            (file) =>
-              this.uploadSvc.uploadFile(file, file.name).pipe(
-                map((res) => res.secure_url),
-                retry(2),
-                catchError((err) => {
-                  console.error(`Upload failed for ${file.name}`, err);
-                  return of<string | null>(null);
-                })
-              ),
-            3
-          ),
-          toArray(), // collect all URLs into string[]
-          tap((urls) => {
-            // filter out any nulls
-            this.product.imageUrls = urls.filter(
-              (u): u is string => u !== null
-            );
-          }),
-          // then post the product
-          switchMap(() =>
-            this.productService.addProduct(this.product).pipe(
-              tap((res) => {
-                if (res.status === 201) {
-                  this.toast.success('Product saved successfully!');
-                } else {
-                  this.toast.error(res.message || 'Unknown error', 'Error');
-                }
-              })
-            )
-          ),
-          // catch any error in upload or save
-          catchError((err) => {
-            console.error('Save workflow failed', err);
-            this.toast.error('Failed to save product', 'Error');
-            return of(null);
-          })
-        )
-        .subscribe();
-    });
+    this.addProductForm.markAllAsTouched();
+    this.addProductForm.get('imageForm')?.markAllAsTouched();
+    console.log(this.addProductForm);
+    var imageUrls = this.addProductForm
+      .get('imageForm')
+      ?.get('imageUrls')?.value;
+    from(imageUrls)
+      .pipe(
+        mergeMap(
+          (file) => this.uploadSvc.uploadFile$(file as File),
+          this.CONCURRENCY
+        ),
+        toArray(),
+        map((urls) => urls.filter((u): u is string => !!u))
+      )
+      .subscribe({
+        next: (images) => {
+          this.product.imageUrls = images;
+          this.productService.addProduct(this.product).subscribe({
+            next: (res) => {
+              if (res.status === 201) {
+                this.toast.success('Product saved successfully!');
+                this.addProductForm.reset();
+                this.product = {
+                  name: '',
+                  sku: '',
+                  description: '',
+                  price: 0,
+                  isActive: true,
+                  categoryIds: [],
+                  attributes: [],
+                  imageUrls: [],
+                };
+              } else {
+                this.toast.error(res.message || 'Unknown error', 'Error');
+              }
+            },
+            error: (err) => {
+              console.error('Save product failed', err);
+              this.toast.error('Failed to save product', 'Error');
+            }
+          });
+        },
+        error: (err) => {
+          this.toast.error('Unexpected error in uploads', 'Error');
+        },
+      });
   }
 }

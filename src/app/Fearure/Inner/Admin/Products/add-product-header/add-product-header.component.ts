@@ -11,7 +11,7 @@ import {
   AfterViewInit
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule }  from '@angular/forms';
+import { AbstractControl, FormGroup, FormsModule, ReactiveFormsModule }  from '@angular/forms';
 import { Editor, NgxEditorComponent, NgxEditorMenuComponent } from 'ngx-editor';
 import { ProductDto } from '../../../../../Shared/Contants/Product';
 
@@ -23,6 +23,7 @@ import { ProductDto } from '../../../../../Shared/Contants/Product';
     NgxEditorMenuComponent,
     FormsModule,
     CommonModule,
+    ReactiveFormsModule
   ],
   templateUrl: './add-product-header.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -30,6 +31,7 @@ import { ProductDto } from '../../../../../Shared/Contants/Product';
 export class AddProductHeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input()  product!: ProductDto;
   @Output() productChange = new EventEmitter<ProductDto>();
+  @Input() header!: FormGroup;
 
   editor!: Editor;
   descriptionHtml = '';
@@ -47,7 +49,10 @@ export class AddProductHeaderComponent implements OnInit, AfterViewInit, OnDestr
     // initialize with the incoming product description
     this.descriptionHtml = this.product.description;
   }
-
+checkajdhasj(){
+  console.log("akdasnkda")
+  console.log(this.header.get('name'))
+}
   ngAfterViewInit() {
     // grab the underlying DOM element (ProseMirror view)
     const dom = this.editor.view.dom;

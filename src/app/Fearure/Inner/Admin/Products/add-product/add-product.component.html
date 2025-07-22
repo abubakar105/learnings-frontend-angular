@@ -1,26 +1,27 @@
-<div class="max-w rounded-lg shadow-lg bg-white p-6">
+<div class="max-w rounded-lg shadow-lg bg-white p-6" >
     <!-- header -->
-    <app-add-product-header [(product)]="product"></app-add-product-header>
+    <form [formGroup]="addProductForm">
+    <app-add-product-header [header]="childFormSend('headerForm')" [(product)]="product"></app-add-product-header>
 
     <!-- images: collect File[] here -->
     <div class="my-4">
         <label>Gallery</label>
-        <app-add-product-images [(files)]="imageFiles"></app-add-product-images>
+        <app-add-product-images [imageForm]="childFormSend('imageForm')" ></app-add-product-images>
     </div>
 
     <!-- attributes -->
     <div class="my-4">
-        <app-add-product-attributes #attrComp [initialAttributes]="convertedAttributes">
+        <app-add-product-attributes [form]="childFormSend('attributesForm')"  [initialAttributes]="convertedAttributes">
         </app-add-product-attributes>
     </div>
 
     <!-- price -->
     <div class="my-4">
-        <app-add-product-price [(price)]="product.price"></app-add-product-price>
+        <app-add-product-price [priceForm]="childFormSend('priceForm')" [(price)]="product.price"></app-add-product-price>
     </div>
 
     <div class="my-4">
-        <app-add-product-category (categoryChange)="onCategorySelected($event)">
+        <app-add-product-category [categoryForm]="childFormSend('categoryForm')" (categoryChange)="onCategorySelected($event)">
 
         </app-add-product-category>
     </div>
@@ -30,4 +31,5 @@
             {{ product.productId ? 'Update' : 'Create' }} Product
         </button>
     </div>
+    </form>
 </div>

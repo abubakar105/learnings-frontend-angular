@@ -1,10 +1,11 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-add-product-price',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, ReactiveFormsModule,CommonModule],
   templateUrl: './add-product-price.component.html',
   styleUrls: ['./add-product-price.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -12,8 +13,9 @@ import { FormsModule } from '@angular/forms';
 export class AddProductPriceComponent {
   @Input() price: number = 0;
   @Output() priceChange: EventEmitter<number> = new EventEmitter<number>();  
-  
+  @Input () priceForm!: FormGroup;
   onPriceChange(): void {
-    this.priceChange.emit(this.price);
+    console.log("Price changed:", this.priceForm);
+    // this.priceChange.emit(this.price);
   }
 }

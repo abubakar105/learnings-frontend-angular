@@ -27,7 +27,6 @@ export class ProductsFilterService {
   private priceRange$  = new BehaviorSubject<{ min: number; max: number } | null>(null);
   private sort$        = new BehaviorSubject<'price_desc' | 'price_asc' | 'newest' | null>(null);
 
-  /** Emits the full DTO‑shaped filter object */
   readonly filterDescriptor$: Observable<ProductFilter> = combineLatest([
     this.search$,
     this.categoryIds$,

@@ -1,36 +1,25 @@
-<div class="flex space-x-4">
+<div class="flex space-x-4" [formGroup]="categoryForm">
   <div class="flex-1">
     <label class="block text-sm font-medium text-gray-700">Parent Category</label>
-    <select
-      [ngModel]="selectedParentId"
-      (ngModelChange)="onParentChange($event)"
-      class="border rounded px-3 py-2 w-full"
-    >
+    <select formControlName="parentCategoryId"
+      class="border rounded px-3 py-2 w-full">
       <option [ngValue]="null" disabled>Select parent category</option>
-      <option
-        *ngFor="let p of parentCategories$ | async; trackBy: trackById"
-        [value]="p.id"
-      >
+      <option *ngFor="let p of parentCategories$ | async; trackBy: trackById" [value]="p.id">
         {{ p.name }}
       </option>
     </select>
+    <small *ngIf="categoryForm.get('parentCategoryId')?.touched && categoryForm.get('parentCategoryId')?.value === null" class="text-red-700">Parent category is required.</small>
   </div>
 
   <div class="flex-1">
     <label class="block text-sm font-medium text-gray-700">Subcategory</label>
-    <select
-      [disabled]="!selectedParentId"
-      [ngModel]="selectedSubId"
-      (ngModelChange)="onSubChange($event)"
-      class="border rounded px-3 py-2 w-full"
-    >
+    <select formControlName="subCategoryId"
+      class="border rounded px-3 py-2 w-full">
       <option [ngValue]="null" disabled>Select subcategory</option>
-      <option
-        *ngFor="let s of allSubCategories$ | async; trackBy: trackById"
-        [value]="s.id"
-      >
+      <option *ngFor="let s of allSubCategories$ | async; trackBy: trackById" [value]="s.id">
         {{ s.name }}
       </option>
     </select>
+    <small *ngIf="categoryForm.get('subCategoryId')?.touched && categoryForm.get('subCategoryId')?.value === null" class="text-red-700">Subcategory is required.</small>
   </div>
 </div>

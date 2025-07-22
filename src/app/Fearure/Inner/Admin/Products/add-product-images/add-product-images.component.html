@@ -1,4 +1,4 @@
-<div class="flex flex-col items-center justify-center w-full" (drop)="onFilesDropped($event)"
+<div [formGroup]="imageForm" class="flex flex-col items-center justify-center w-full" (drop)="onFilesDropped($event)"
     (dragover)="onDragOver($event)">
     <label for="dropzone-file"
         class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
@@ -10,9 +10,11 @@
             <p class="mb-2 text-sm text-gray-500">
                 <span class="font-semibold">Click to upload</span> or drag and drop
             </p>
-            <p class="text-xs text-gray-500">SVG, PNG, JPG or GIF (MAX. 800×400px)</p>
+            <p class="text-xs text-gray-500">SVG, PNG, JPG or GIF (MAX. 800 x 400px)</p>
         </div>
-        <input id="dropzone-file" type="file" multiple class="hidden" (change)="onFileSelect($event)" />
+        <input formControlName="imageUrls" id="dropzone-file" type="file" multiple class="hidden"
+            (change)="onFileSelect($event)" />
+
     </label>
 
     <ul *ngIf="files.length" class="mt-4 w-full space-y-2">
@@ -21,4 +23,13 @@
             <button (click)="removeFile(i)" class="text-red-600 hover:text-red-800">&times;</button>
         </li>
     </ul>
+</div>
+<div>
+    <small *ngIf="imageForm.get('imageUrls')?.dirty && imageForm.get('imageUrls')?.value.length === 0"
+        class="text-red-700">Product Images are required
+    </small>
+    <small *ngIf="imageForm.get('imageUrls')?.dirty && imageForm.get('imageUrls')?.value?.length > 4" class="text-red-700">Maximum 4 number of images are
+        allowed.</small>
+    <small *ngIf="imageForm.get('imageUrls')?.dirty && imageForm.get('imageUrls')?.value?.length < 3" class="text-red-700">Minimum 3 number of images are
+        required.</small>
 </div>

@@ -1,27 +1,48 @@
-<div>
-    <label class="font-medium">Variation</label>
+<div [formGroup]="form">
+  <div formArrayName="attributeWithValue">
+    <div
+      *ngFor="let ctrl of attributes.controls; let i = index; trackBy: trackByIndex"
+      [formGroupName]="i"
+      class="flex items-center space-x-4 mb-3"
+    >
+      <select
+        formControlName="attributeId"
+        (change)="addAttribute()"
+        class="border rounded px-3 py-2 flex-shrink-0"
+      >
+        <option [ngValue]="null" disabled>Select attribute</option>
+        <option
+          *ngFor="let opt of lookups"
+          [ngValue]="opt.id"
+          [disabled]="isDisabledAttribute(i, opt.id) && opt.id !== ctrl.value.attributeId"
+        >
+          {{ opt.name }}
+        </option>
+      </select>
 
-    <div *ngFor="let row of productAddedAttributesList; let i = index;trackBy: trackById" class="flex items-center mt-4 space-x-4">
-        <select [(ngModel)]="row.attributeId" (ngModelChange)="onAttributeChange(i)" class="border rounded px-3 py-2">
-            <option [ngValue]="null" disabled>Select attribute</option>
-            <option *ngFor="let attr of ProductsLookupsAttributes" [ngValue]="attr.id"
-                [disabled]="isDisabledAttribute(i, attr.id) && attr.id !== row.attributeId">
-                {{ attr.name }}
-            </option>
-        </select>
+      <input
+        formControlName="attributeValue"
+        type="text"
+        placeholder="Enter value (max 10 chars)"
+        class="flex-1 border rounded px-3 py-2"
+      />
 
-        <input [(ngModel)]="row.attributeValue" type="text" placeholder="Enter value"
-            class="flex-1 border rounded px-3 py-2" />
-
-        <button (click)="removeAttribute(i)" class="text-white bg-red-600 hover:bg-red-800 rounded px-3 py-1 text-xl">
-            &times;
-        </button>
+      <button
+        type="button"
+        (click)="removeAttribute(i)"
+        class="text-white bg-red-600 hover:bg-red-800 rounded px-3 py-1"
+      >
+        &times;
+      </button>
     </div>
+  </div>
 
-    <div class="mt-4">
-        <button (click)="addAttribute()"
-            class="bg-green-600 hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded px-4 py-2">
-            + Add another attribute
-        </button>
-    </div>
+  <button
+    type="button"
+    (click)="addAttribute()"
+    [disabled]="!canAddNewRow"
+    class="mt-2 bg-green-600 hover:bg-green-800 text-white rounded px-4 py-2 disabled:opacity-50"
+  >
+    + Add another attribute
+  </button>
 </div>

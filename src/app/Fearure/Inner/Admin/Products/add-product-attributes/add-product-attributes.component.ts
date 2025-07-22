@@ -1,7 +1,20 @@
-import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { CommonModule }   from '@angular/common';
-import { FormsModule }    from '@angular/forms';
-import { ToastService }   from '../../../../../Core/Services/ToastService';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges
+} from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  FormArray,
+  Validators,
+  ReactiveFormsModule
+} from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { ToastService } from '../../../../../Core/Services/ToastService';
 import { ProductService } from '../../../../../Core/Services/ProductService';
 
 interface LookupAttribute {
@@ -9,7 +22,7 @@ interface LookupAttribute {
   name: string;
 }
 
-interface AddedAttribute {
+export interface AddedAttribute {
   attributeId: string | null;
   attributeValue: string;
 }
@@ -17,75 +30,92 @@ interface AddedAttribute {
 @Component({
   selector: 'app-add-product-attributes',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './add-product-attributes.component.html',
-  styleUrls: ['./add-product-attributes.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AddProductAttributesComponent implements OnInit, OnChanges {
-  ProductsLookupsAttributes: LookupAttribute[] = [];
-  productAddedAttributesList: AddedAttribute[] = [];
-   @Input() initialAttributes: AddedAttribute[] = [];
+  @Input() form!: FormGroup;
+  @Input() initialAttributes: AddedAttribute[] = [];
+
+  lookups: LookupAttribute[] = [];
+
   constructor(
+    private fb: FormBuilder,
     private productService: ProductService,
-    private toastService: ToastService
-  ) {}
- ngOnChanges(changes: SimpleChanges): void {
-    if (changes['initialAttributes'] && this.initialAttributes.length > 0) {
-      this.productAddedAttributesList = [...this.initialAttributes];
+    private toast: ToastService
+  ) { }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['initialAttributes'] && this.initialAttributes?.length) {
+      this.resetAttributes(this.initialAttributes);
     }
   }
-  ngOnInit(): void {
-      this.productAddedAttributesList = [...this.initialAttributes];
 
-    this.productService.getAllLookupAttributes().subscribe(
-      (res: any) => {
+  ngOnInit() {
+    if (this.attributes.length === 0) {
+      this.addAttribute();
+    }
+
+    this.productService.getAllLookupAttributes().subscribe({
+      next: res => {
         if (res.status === 200) {
-          this.ProductsLookupsAttributes = res.data.map((a: any) => ({
+          this.lookups = res.data.map((a: any) => ({
             id: a.productsAttributeId,
             name: a.name
           }));
-          this.addAttribute();
         } else {
-          this.toastService.error(res.message, 'Error');
+          this.toast.error(res.message, 'Error');
         }
       },
-      () => this.toastService.error('Failed to fetch product attributes', 'Error')
-    );
+      error: () => this.toast.error('Failed to fetch attributes', 'Error')
+    });
   }
 
-get canAddNewRow(): boolean {
-  if (this.productAddedAttributesList.length === 0) {
-    return true;
-  }
-  const last = this.productAddedAttributesList[this.productAddedAttributesList.length - 1];
-  return last.attributeId !== null && last.attributeValue.trim() !== '';
-}
-trackById(_: number, item: AddedAttribute) {
-  return item.attributeId;
-}
-  addAttribute(): void {
-    if (this.productAddedAttributesList.length && !this.canAddNewRow) return;
-    this.productAddedAttributesList.push({ attributeId: null, attributeValue: '' });
-
-    console.log(this.productAddedAttributesList);
+  get attributes(): FormArray {
+    return this.form.get('attributeWithValue') as FormArray;
   }
 
-  removeAttribute(idx: number): void {
-    this.productAddedAttributesList.splice(idx, 1);
+  private createRow(data?: AddedAttribute) {
+    return this.fb.group({
+      attributeId: [data?.attributeId ?? null, Validators.required],
+      attributeValue: [
+        data?.attributeValue ?? '',
+        [Validators.required, Validators.maxLength(10)]
+      ]
+    });
   }
 
-  onAttributeChange(idx: number): void {
-    // nothing extra needed here unless you want to auto-add a new row:
-    if (this.canAddNewRow) {
-      // optional: auto-add next row as soon as they pick this one
-      // this.addAttribute();
+  private resetAttributes(data: AddedAttribute[]) {
+    const fa = this.fb.array(data.map(d => this.createRow(d)));
+    this.form.setControl('attributeWithValue', fa);
+  }
+
+  addAttribute() {
+    if (!this.canAddNewRow) {
+      return;
     }
+    this.attributes.push(this.createRow());
   }
 
-  isDisabledAttribute(currentIndex: number, attrId: string): boolean {
-    return this.productAddedAttributesList.some((row, index) =>
-      index !== currentIndex && row.attributeId === attrId
-    );
+  removeAttribute(idx: number) {
+    this.attributes.removeAt(idx);
+  }
+
+  get canAddNewRow(): boolean {
+    if (this.attributes.length <= 1) {
+      return true;
+    }
+    const last = this.attributes.at(this.attributes.length - 1).value;
+    return !!(last.attributeId && last.attributeValue.trim());
+  }
+
+  isDisabledAttribute(i: number, attrId: string) {
+    return this.attributes.controls.some((_, idx) => {
+      return idx !== i && this.attributes.at(idx).value.attributeId === attrId;
+    });
+  }
+  trackByIndex(_: number, __: any) {
+    return _;
   }
 }

@@ -3,9 +3,11 @@ import {
   Output,
   EventEmitter,
   ChangeDetectionStrategy,
+  Input,
+  OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { map, shareReplay, catchError } from 'rxjs/operators';
 import { ProductCategoryService } from '../../../../../Core/Services/ProductCategoryService';
@@ -24,12 +26,12 @@ interface RawCategory {
 @Component({
   selector: 'app-add-product-category',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,ReactiveFormsModule],
   templateUrl: './add-product-category.component.html',
   styleUrls: ['./add-product-category.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddProductCategoryComponent {
+export class AddProductCategoryComponent implements OnInit {
   readonly all$: Observable<RawCategory[]>;
   readonly parentCategories$: Observable<Category[]>;
   readonly allSubCategories$: Observable<Category[]>;
@@ -38,6 +40,7 @@ export class AddProductCategoryComponent {
   selectedSubId: string | null = null;
 
   @Output() categoryChange = new EventEmitter<{ parentId: string; subId: string }>();
+  @Input() categoryForm!: FormGroup;
 
   constructor(
     private productCategoryService: ProductCategoryService,
@@ -76,6 +79,9 @@ export class AddProductCategoryComponent {
           .map(c => ({ id: c.id, name: c.name }))
       )
     );
+  }
+  ngOnInit(): void {
+    // console.log(this.categoryForm);
   }
 
   onParentChange(parentId: string) {
