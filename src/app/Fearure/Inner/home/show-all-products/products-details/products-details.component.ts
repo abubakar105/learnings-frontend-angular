@@ -6,6 +6,7 @@ import { forkJoin } from 'rxjs';
 import { ProductService } from '../../../../../Core/Services/ProductService';
 import { ProductCategoryService } from '../../../../../Core/Services/ProductCategoryService';
 import { ToastService } from '../../../../../Core/Services/ToastService';
+import { CartService } from '../../../../../Core/Services/CartService';
 
 // Strongly-typed interfaces
 interface CategoryId {
@@ -49,6 +50,7 @@ export class ProductsDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private productService: ProductService,
+    private cartService: CartService,
     private categoryService: ProductCategoryService,
     private toast: ToastService
   ) {}
@@ -140,6 +142,17 @@ export class ProductsDetailsComponent implements OnInit {
   }
 
   addToCart(): void {
-    console.log('Add to cart', this.selectedProduct, 'qty', this.qty);
+    this.cartService.addProductToCart(this.productId!, this.qty).subscribe({
+      next: (res) => {
+        if (res.status === 200) {
+          this.toast.success('Product added to cart successfully', 'Success');
+        } else {
+          this.toast.error(res.message, 'Error');
+        }
+      },
+      error: () => {
+        this.toast.error('Failed to add product to cart', 'Error');
+      },
+    });
   }
 }
