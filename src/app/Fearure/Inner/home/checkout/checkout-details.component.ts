@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { BillingAndAddressComponent } from "./billing-and-address/billing-and-address.component";
 import { CartComponent } from "./cart/cart.component";
+import { CartService } from '../../../../Core/Services/CartService';
 
 interface CartItem {
   id: number;
@@ -23,16 +24,6 @@ export class CheckoutDetailsComponent {
  steps = ['Cart', 'Billing & address', 'Payment'];
   currentStep = 0;
 
-  cart: CartItem[] = [
-    {
-      id: 1,
-      name: 'Super Games',
-      category: 'toys',
-      price: 285,
-      quantity: 1,
-      imageUrl: 'assets/images/super-games.png'
-    }
-  ];
 
   get subTotal(): number {
     return 20
@@ -58,17 +49,4 @@ export class CheckoutDetailsComponent {
     }
   }
 
-  increment(item: CartItem) {
-    item.quantity++;
-  }
-
-  decrement(item: CartItem) {
-    if (item.quantity > 1) {
-      item.quantity--;
-    }
-  }
-
-  remove(item: CartItem) {
-    this.cart = this.cart.filter(i => i.id !== item.id);
-  }
 }
