@@ -7,6 +7,7 @@ import { ProductService } from '../../../../../Core/Services/ProductService';
 import { ProductCategoryService } from '../../../../../Core/Services/ProductCategoryService';
 import { ToastService } from '../../../../../Core/Services/ToastService';
 import { CartService } from '../../../../../Core/Services/CartService';
+import { ProductReviewsComponent } from "../product-reviews/product-reviews.component";
 
 // Strongly-typed interfaces
 interface CategoryId {
@@ -34,7 +35,7 @@ interface Product {
 @Component({
   selector: 'app-products-details',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ProductReviewsComponent],
   templateUrl: './products-details.component.html',
   styleUrls: ['./products-details.component.css'],
   // changeDetection: ChangeDetectionStrategy.OnPush,
