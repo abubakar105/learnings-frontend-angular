@@ -13,4 +13,7 @@ export class ReviewsService {
   getAllReviews(productId: string | null): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/Reviews/getAllProductReviews/${productId}`);
   }
+  addProductReview(reviewBody:any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/Reviews`, reviewBody);
+  }
 }
