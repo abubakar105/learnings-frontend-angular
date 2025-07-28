@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { PendingChangesGuard } from '../../Core/Guards/PendingChangesGuard';
 
 export const authRoutes: Routes = [
   {
@@ -12,6 +13,7 @@ export const authRoutes: Routes = [
       import('./register-user/register-user.component').then(
         m => m.RegisterUserComponent
       ),
+        canDeactivate: [PendingChangesGuard]
   },
   {
     path: 'forget-password',
