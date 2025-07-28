@@ -22,6 +22,8 @@ import { AuthService } from '../../../Core/Services/login.service';
 import { ToastService } from '../../../Core/Services/ToastService';
 import { Router, RouterModule } from '@angular/router';
 import { DuplicateCheckValidator } from '../../../Shared/Methods/duplicateEmailCheck';
+import { ConfirmDialogService } from '../../../Core/Services/ConfirmDialogService';
+import {  PendingChangesGuard } from '../../../Core/Guards/PendingChangesGuard';
 
 @Component({
   selector: 'app-register-user',
@@ -35,8 +37,9 @@ import { DuplicateCheckValidator } from '../../../Shared/Methods/duplicateEmailC
   templateUrl: './register-user.component.html',
   styleUrl: './register-user.component.css',
 })
-export class RegisterUserComponent {
+export class RegisterUserComponent implements PendingChangesGuard{
   registerForm: FormGroup;
+  private _isSaved = false;
   emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   constructor(
     private fb: FormBuilder,
@@ -44,7 +47,8 @@ export class RegisterUserComponent {
     private authService: AuthService,
     private toast: ToastService,
     private router: Router,
-    private duplicateCheckValidator: DuplicateCheckValidator
+    private duplicateCheckValidator: DuplicateCheckValidator,
+    private confirmDialogService: ConfirmDialogService
   ) {
     this.registerForm = this.fb.group(
       {
@@ -100,6 +104,7 @@ export class RegisterUserComponent {
       this.authService.RegisterUser(this.registerForm.value).subscribe({
         next: (response) => {
           if (response.status === 200 && response.data != null) {
+            this._isSaved = true;
             this.toast.success('User created successful!', 'Success');
             const email = this.registerForm.get('email')?.value;
             const password = this.registerForm.get('password')?.value;
@@ -109,6 +114,12 @@ export class RegisterUserComponent {
             });
             this.registerForm.reset();
             // this.router.navigate(['/login'])
+            this.router.navigate(['/login'], {
+            state: {
+              email: this.registerForm.value.email,
+              password: this.registerForm.value.password,
+            },
+          });
           } else if (response.status === 409) {
             this.toast.error('Email already exists.', 'Error');
           } else if (response.status == 400) {
@@ -132,5 +143,14 @@ export class RegisterUserComponent {
         control?.markAsTouched({ onlySelf: true });
       }
     });
+  }
+  canDeactivate(): boolean | Observable<boolean> | Promise<boolean> {
+    if (this.registerForm.pristine || this._isSaved) {
+      return true;
+    }
+    return this.confirmDialogService.confirm(
+      'You have unsaved changes. Leave anyway?',
+      'Unsaved Changes'
+    );
   }
 }
