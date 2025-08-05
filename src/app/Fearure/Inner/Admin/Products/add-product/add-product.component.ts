@@ -53,13 +53,14 @@ export class AddProductComponent implements OnInit, OnDestroy {
   imageFiles: File[] = [];
   addProductForm: FormGroup;
   CONCURRENCY = 5;
+  productCategory: { parentCategoryId: string; childCategoryId: string }[] = [];
   product: ProductDto = {
     name: '',
     sku: '',
     description: '',
     price: 0,
     isActive: true,
-    categoryIds: [],
+    categoryIds: this.productCategory,
     attributes: [],
     imageUrls: [],
   };
@@ -144,10 +145,70 @@ export class AddProductComponent implements OnInit, OnDestroy {
     ];
   }
 
-  saveProduct() {
-    this.addProductForm.markAllAsTouched();
+  mapValues(){
     this.addProductForm.get('imageForm')?.markAllAsTouched();
     console.log(this.addProductForm);
+    this.product.name = this.addProductForm
+      .get('headerForm')
+      ?.get('name')?.value;
+    this.product.sku = this.addProductForm.get('headerForm')?.get('sku')?.value;
+    this.product.description = this.addProductForm
+      .get('headerForm')
+      ?.get('description')?.value;
+    this.product.price = this.addProductForm
+      .get('priceForm')
+      ?.get('price')?.value;
+
+    const categoryIds = this.addProductForm.get('categoryForm')?.value;
+    console.log('Product to d:', categoryIds);
+    this.product.categoryIds = [
+      {
+        parentCategoryId: categoryIds.parentCategoryId,
+        childCategoryId: categoryIds.subCategoryId,
+      },
+    ];
+    this.product.isActive = true;
+    const raw = this.attrComp.attributes.value;
+    console.log('Attributes:', raw);
+
+    const mapped = raw
+      .filter((attr: any) =>
+        Array.isArray(attr.attributeValues) && attr.attributeValues.length > 0
+          ? true
+          : !!attr.attributeValue
+      )
+      .map((attr: any) => {
+        const multi =
+          Array.isArray(attr.attributeValues) &&
+          attr.attributeValues.length > 0;
+        const value = multi
+          ? (attr.attributeValues as string[]).join(',')
+          : attr.attributeValue;
+
+        return {
+          attributeTypeId: attr.attributeId,
+          value,
+        };
+      });
+    console.log('Mapped attributes:', mapped);
+
+    this.product.attributes = mapped;
+    this.product.categoryIds = this.product.categoryIds.filter(
+      (c) => c.parentCategoryId && c.childCategoryId
+    );
+    this.product.imageUrls = this.addProductForm
+      .get('imageForm')
+      ?.get('imageUrls')?.value;
+    console.log('Product to save:', this.product);
+    if (this.addProductForm.invalid) {
+      this.toast.error('Please fill all required fields', 'Error');
+      return;
+    }
+  }
+  saveProduct() {
+    debugger;
+    this.addProductForm.markAllAsTouched();
+    this.mapValues();
     var imageUrls = this.addProductForm
       .get('imageForm')
       ?.get('imageUrls')?.value;
@@ -185,7 +246,7 @@ export class AddProductComponent implements OnInit, OnDestroy {
             error: (err) => {
               console.error('Save product failed', err);
               this.toast.error('Failed to save product', 'Error');
-            }
+            },
           });
         },
         error: (err) => {

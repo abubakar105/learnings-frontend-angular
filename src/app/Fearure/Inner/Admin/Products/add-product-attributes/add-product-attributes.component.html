@@ -1,48 +1,65 @@
 <div [formGroup]="form">
   <div formArrayName="attributeWithValue">
-    <div
-      *ngFor="let ctrl of attributes.controls; let i = index; trackBy: trackByIndex"
-      [formGroupName]="i"
-      class="flex items-center space-x-4 mb-3"
-    >
-      <select
-        formControlName="attributeId"
-        (change)="addAttribute()"
-        class="border rounded px-3 py-2 flex-shrink-0"
-      >
+    <div *ngFor="let ctrl of attributes.controls; let i = index; trackBy: trackByIndex" [formGroupName]="i"
+      class="flex items-center space-x-4 mb-3">
+
+      <select formControlName="attributeId" (change)="addAttribute()" class="border rounded px-3 py-2 flex-shrink-0">
         <option [ngValue]="null" disabled>Select attribute</option>
-        <option
-          *ngFor="let opt of lookups"
-          [ngValue]="opt.id"
-          [disabled]="isDisabledAttribute(i, opt.id) && opt.id !== ctrl.value.attributeId"
-        >
+        <option *ngFor="let opt of lookups" [ngValue]="opt.id"
+          [disabled]="isDisabledAttribute(i, opt.id) && opt.id !== ctrl.value.attributeId">
           {{ opt.name }}
         </option>
       </select>
 
-      <input
-        formControlName="attributeValue"
-        type="text"
-        placeholder="Enter value (max 10 chars)"
-        class="flex-1 border rounded px-3 py-2"
-      />
+      <div [ngSwitch]="getAttributeName(i)" class="flex-1">
+        <!-- <select *ngSwitchCase="'Size'" formControlName="attributeValue" class="border rounded px-3 py-2 w-full">
+          <option [ngValue]="null" disabled>Select Size</option>
+          <option *ngFor="let s of size" [ngValue]="s">{{ s }}</option>
+        </select> -->
 
-      <button
-        type="button"
-        (click)="removeAttribute(i)"
-        class="text-white bg-red-600 hover:bg-red-800 rounded px-3 py-1"
-      >
+        <select *ngSwitchCase="'Gender'" formControlName="attributeValue" class="border rounded px-3 py-2 w-full">
+          <option [ngValue]="null" disabled>Select Gender</option>
+          <option *ngFor="let g of genders" [ngValue]="g">{{ g }}</option>
+        </select>
+        <ng-container *ngSwitchCase="'Size'">
+          <div class="grid grid-cols-5 gap-2">
+            <label *ngFor="let s of size" class="flex items-center space-x-1">
+              <input type="checkbox" [checked]="isSizeSelected(i, s)"
+                (change)="toggleSize(i, s, $any($event.target).checked)" />
+              <span>{{ s }}</span>
+            </label>
+          </div>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'Color'">
+          <div formArrayName="attributeValues" class="flex flex-wrap items-center space-x-3 mb-2">
+            <div *ngFor="let c of colorValues(i).controls; let j = index" [formGroupName]="j"
+              class="flex items-center space-x-2">
+              <span [style.background]="colorValues(i).at(j).value" [cpToggle]="true" [cpDialogDisplay]="'popup'"
+                [(colorPicker)]="colorValues(i).at(j).value" class="w-8 h-8 rounded border cursor-pointer"></span>
+              <button type="button" (click)="removeValue(i, j)" class="text-red-600 hover:text-red-800">&times;</button>
+            </div>
+            <button type="button" (click)="addValue(i)" class="mt-1 text-sm text-green-600 hover:underline">
+              + Add color
+            </button>
+          </div>
+        </ng-container>
+
+        <input *ngSwitchDefault formControlName="attributeValue" type="text" placeholder="Enter value (max 10 chars)"
+          class="border rounded px-3 py-2 w-full" />
+      </div>
+
+      <button type="button" (click)="removeAttribute(i)"
+        class="text-white bg-red-600 hover:bg-red-800 rounded px-3 py-1">
         &times;
       </button>
     </div>
   </div>
 
-  <button
-    type="button"
-    (click)="addAttribute()"
-    [disabled]="!canAddNewRow"
-    class="mt-2 bg-green-600 hover:bg-green-800 text-white rounded px-4 py-2 disabled:opacity-50"
-  >
+  <button type="button" (click)="addAttribute()" [disabled]="!canAddNewRow"
+    class="mt-2 bg-green-600 hover:bg-green-800 text-white rounded px-4 py-2 disabled:opacity-50">
     + Add another attribute
   </button>
+
+  <button (click)="check()">check</button>
 </div>
