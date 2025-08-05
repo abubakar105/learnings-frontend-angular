@@ -33,3 +33,34 @@
     min-width: 50%;
     max-width: 50%;
   }
+  /* Styles (component or global) */
+.color-picker-trigger {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+::ng-deep .cp-picker-wrap {
+  max-height: 200px !important;
+  overflow: auto;
+}
+
+::ng-deep .cp-picker {
+  width: 200px !important;
+}
+/* Ensure the wrapper is the positioning context */
+.attribute-row-wrapper {
+  position: relative;
+}
+
+/* Target the picker’s popup .cp-dialog and force it under the trigger */
+::ng-deep .attribute-row-wrapper .cp-dialog {
+  position: absolute !important;
+  top: calc(100% + 4px) !important;   /* 4px gap below swatch */
+  left: 0 !important;
+  z-index: 1000;
+}
