@@ -7,7 +7,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { Editor, Validators } from 'ngx-editor';
-import { forkJoin, from, of } from 'rxjs';
+import { forkJoin, from, Observable, of } from 'rxjs';
 import {
   mergeMap,
   map,
@@ -205,53 +205,135 @@ export class AddProductComponent implements OnInit, OnDestroy {
       return;
     }
   }
+  // in AddProductComponent
+addProductWithFiles(product: ProductDto, imageFiles: File[]) {
+  const formData = new FormData();
+
+  formData.append('Name', product.name);
+  formData.append('SKU', product.sku);
+  formData.append('Description', product.description);
+  formData.append('Price', product.price.toString());
+  formData.append('IsActive', product.isActive.toString());
+
+  product.categoryIds.forEach((cat, index) => {
+    formData.append(`CategoryIds[${index}].parentCategoryId`, cat.parentCategoryId);
+    formData.append(`CategoryIds[${index}].childCategoryId`, cat.childCategoryId);
+  });
+
+  product.attributes.forEach((attr, index) => {
+    formData.append(`Attributes[${index}].attributeTypeId`, attr.attributeTypeId);
+    formData.append(`Attributes[${index}].value`, attr.value);
+  });
+
+  imageFiles.forEach((file) => {
+    // append multiple files under same name to bind to List<IFormFile>
+    formData.append('ImageUrls', file, file.name);
+  });
+
+  // Return the observable so caller can subscribe
+  return this.productService.addProduct(formData);
+}
+
   saveProduct() {
-    debugger;
-    this.addProductForm.markAllAsTouched();
-    this.mapValues();
-    var imageUrls = this.addProductForm
-      .get('imageForm')
-      ?.get('imageUrls')?.value;
-    from(imageUrls)
-      .pipe(
-        mergeMap(
-          (file) => this.uploadSvc.uploadFile$(file as File),
-          this.CONCURRENCY
-        ),
-        toArray(),
-        map((urls) => urls.filter((u): u is string => !!u))
-      )
-      .subscribe({
-        next: (images) => {
-          this.product.imageUrls = images;
-          this.productService.addProduct(this.product).subscribe({
-            next: (res) => {
-              if (res.status === 201) {
-                this.toast.success('Product saved successfully!');
-                this.addProductForm.reset();
-                this.product = {
-                  name: '',
-                  sku: '',
-                  description: '',
-                  price: 0,
-                  isActive: true,
-                  categoryIds: [],
-                  attributes: [],
-                  imageUrls: [],
-                };
-              } else {
-                this.toast.error(res.message || 'Unknown error', 'Error');
-              }
-            },
-            error: (err) => {
-              console.error('Save product failed', err);
-              this.toast.error('Failed to save product', 'Error');
-            },
-          });
-        },
-        error: (err) => {
-          this.toast.error('Unexpected error in uploads', 'Error');
-        },
-      });
+  this.addProductForm.markAllAsTouched();
+  
+  if (this.addProductForm.invalid) {
+    this.toast.error('Please fill all required fields', 'Error');
+    // return;
   }
+
+  this.mapValues();
+
+  // Get the actual File objects from the form
+  // inside saveProduct()
+const imageFiles: File[] = this.addProductForm.get('imageForm')?.get('imageUrls')?.value || [];
+
+if (!imageFiles || imageFiles.length === 0) {
+  this.toast.error('Please select at least one image', 'Error');
+  return;
+}
+
+// send FormData
+this.addProductWithFiles(this.product, imageFiles).subscribe({
+  next: (res: any) => {
+    if (res?.status === 201 || res?.statusCode === 201) {
+      this.toast.success('Product saved successfully!');
+      this.addProductForm.reset();
+      this.resetProduct();
+    } else {
+      this.toast.error(res?.message || 'Unknown error', 'Error');
+    }
+  },
+  error: (err:any) => {
+    console.error('Save product failed', err);
+    this.toast.error('Failed to save product', 'Error');
+  }
+});
+
+}
+
+private resetProduct() {
+  this.product = {
+    name: '',
+    sku: '',
+    description: '',
+    price: 0,
+    isActive: true,
+    categoryIds: [],
+    attributes: [],
+    imageUrls: [],
+  };
+  this.imageFiles = [];
+}
+  // saveProduct() {
+  //   debugger;
+  //   this.addProductForm.markAllAsTouched();
+  //   this.mapValues();
+  //   var imageUrls = this.addProductForm
+  //     .get('imageForm')
+  //     ?.get('imageUrls')?.value;
+  //   this.product.imageUrls = imageUrls;
+      
+  //   // from(imageUrls)
+  //   //   .pipe(
+  //   //     mergeMap(
+  //   //       (file) => this.uploadSvc.uploadFile$(file as File),
+  //   //       this.CONCURRENCY
+  //   //     ),
+  //   //     toArray(),
+  //   //     map((urls) => urls.filter((u): u is string => !!u))
+  //   //   )
+  //   //   .subscribe({
+  //   //     next: (images) => {
+  //   //       this.product.imageUrls = images;
+  //         this.productService.addProduct(this.product).subscribe({
+  //           next: (res) => {
+  //             if (res.status === 201) {
+  //               this.toast.success('Product saved successfully!');
+  //               this.addProductForm.reset();
+  //               this.product = {
+  //                 name: '',
+  //                 sku: '',
+  //                 description: '',
+  //                 price: 0,
+  //                 isActive: true,
+  //                 categoryIds: [],
+  //                 attributes: [],
+  //                 imageUrls: [],
+  //               };
+  //             } else {
+  //               this.toast.error(res.message || 'Unknown error', 'Error');
+  //             }
+  //           },
+  //           error: (err) => {
+  //             console.error('Save product failed', err);
+  //             this.toast.error('Failed to save product', 'Error');
+  //           },
+  //         });
+  //       // },
+  //       // error: (err) => {
+  //       //   this.toast.error('Unexpected error in uploads', 'Error');
+  //       // },
+  //     // });
+  // }
 }

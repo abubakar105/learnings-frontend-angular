@@ -17,8 +17,8 @@ export class ProductService {
   getLookUpValue(body:any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/ProductsLookUpAttribute/lookupValue`,body);
   }
-  addProduct(body:any): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/Products`, body);
+  addProduct(formData:any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/Products`, formData, { withCredentials: true });
   }
   getAllProducts(params : any): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/Products`, { params });

@@ -4,7 +4,7 @@ import {
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
-  HttpErrorResponse
+  HttpErrorResponse,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
@@ -19,14 +19,24 @@ export class TokenInterceptor implements HttpInterceptor {
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-
-     if (req.url.startsWith('https://api.cloudinary.com/v1_1/')) {
+    if (req.url.startsWith('https://api.cloudinary.com/v1_1/')) {
       return next.handle(req);
     }
+    const isFormData = req.body instanceof FormData;
+    let jsonReq = req;
+    if (!isFormData) {
+      jsonReq = req.clone({
+        headers: req.headers.set('Content-Type', 'application/json'),
+      });
+    } else {
+      // ensure we don't accidentally have a content-type header set
+      const headers = req.headers.delete('Content-Type');
+      jsonReq = req.clone({ headers });
+    }
     // 1. Add Content-Type header
-    const jsonReq = req.clone({
-      headers: req.headers.set('Content-Type', 'application/json'),
-    });
+    // const jsonReq = req.clone({
+    //   headers: req.headers.set('Content-Type', 'application/json'),
+    // });
 
     // 2. Check if this is an auth endpoint (login, register, or refresh)
     if (this.isAuthEndpoint(jsonReq.url)) {
@@ -53,10 +63,7 @@ export class TokenInterceptor implements HttpInterceptor {
     // 4. Handle response; on 401, try to refresh once
     return next.handle(reqWithToken).pipe(
       catchError((err: HttpErrorResponse) => {
-        if (
-          err.status === 401 &&
-          !this.isAuthEndpoint(jsonReq.url)
-        ) {
+        if (err.status === 401 && !this.isAuthEndpoint(jsonReq.url)) {
           // Attempt to refresh
           return this.authService.refreshAccessToken().pipe(
             switchMap((newToken) => {
