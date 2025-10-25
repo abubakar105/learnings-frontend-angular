@@ -24,7 +24,13 @@ export const adminRoutes: Routes = [
         (m) => m.AdminUsersComponent
       ),
   },
-
+{
+    path: 'azure-users-management',
+    loadComponent: () =>
+      import('./admin-add-role/azure-users-management/azure-users-management.component').then(
+        (m) => m.AzureUsersManagementComponent
+      ),
+  },
   // /admin/role-management
   {
     path: 'role-management',
