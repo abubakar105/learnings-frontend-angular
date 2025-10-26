@@ -11,8 +11,8 @@ export const environment = {
     clientId: '2771ca11-46c8-4052-9c47-29f551ed5e6c',
     authority:
       'https://login.microsoftonline.com/4a369bea-f988-4d2b-baae-0d98d5e87d25',
-    redirectUri: 'http://localhost:4200/admin',
-    postLogoutRedirectUri: 'http://localhost:4200',
+    redirectUri: 'https://learningsfrontendstg.z19.web.core.windows.net/admin',
+    postLogoutRedirectUri: 'https://learningsfrontendstg.z19.web.core.windows.net',
     scopes: [
       'openid',
       'profile',
