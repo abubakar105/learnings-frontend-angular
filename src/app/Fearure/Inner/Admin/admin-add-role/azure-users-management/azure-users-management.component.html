@@ -1,0 +1,120 @@
+<div class="p-6">
+  <!-- Header -->
+  <div class="mb-6 flex justify-between items-center">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Azure AD Users Management</h2>
+      <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        Manage roles for users authenticated via Azure Active Directory
+      </p>
+    </div>
+    <button
+      (click)="loadAzureUsers()"
+      [disabled]="isLoading"
+      class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50"
+    >
+      {{ isLoading ? 'Loading...' : 'Refresh' }}
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center py-12">
+    <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white"></div>
+    <p class="mt-4 text-gray-600 dark:text-gray-400">Loading Azure users...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && azureUsers.length === 0" class="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg">
+    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+    </svg>
+    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No Azure users found</h3>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+      Users will appear here after they login via Azure AD for the first time.
+    </p>
+  </div>
+
+  <!-- Users Table -->
+  <div *ngIf="!isLoading && azureUsers.length > 0" class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+      <thead class="text-xs text-white uppercase bg-gray-700 dark:bg-gray-700">
+        <tr>
+          <th scope="col" class="px-6 py-3">Email</th>
+          <th scope="col" class="px-6 py-3">Name</th>
+          <th scope="col" class="px-6 py-3">Current Role</th>
+          <th scope="col" class="px-6 py-3">Change Role</th>
+          <th scope="col" class="px-6 py-3">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let user of azureUsers; let i = index"
+          class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+        >
+          <!-- Email -->
+          <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+            {{ user.email }}
+          </td>
+
+          <!-- Name -->
+          <td class="px-6 py-4 text-gray-900 dark:text-white">
+            {{ user.name }}
+          </td>
+
+          <!-- Current Role Badge -->
+          <td class="px-6 py-4">
+            <span
+              *ngFor="let role of user.roles"
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2"
+              [ngClass]="getRoleBadgeClass(role)"
+            >
+              {{ role }}
+            </span>
+          </td>
+
+          <!-- Role Selector -->
+          <td class="px-6 py-4">
+            <select
+              [(ngModel)]="user.selectedRole"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            >
+              <option *ngFor="let role of availableRoles" [value]="role">
+                {{ role }}
+              </option>
+            </select>
+          </td>
+
+          <!-- Actions -->
+          <td class="px-6 py-4">
+            <button
+              (click)="changeRole(user)"
+              [disabled]="user.selectedRole === user.roles[0]"
+              class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Update Role
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Info Box -->
+  <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+    <div class="flex">
+      <svg class="h-5 w-5 text-blue-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+      </svg>
+      <div class="ml-3">
+        <h3 class="text-sm font-medium text-blue-800 dark:text-blue-300">About Azure AD Roles</h3>
+        <div class="mt-2 text-sm text-blue-700 dark:text-blue-400">
+          <ul class="list-disc list-inside space-y-1">
+            <li><strong>Admin:</strong> Can access all admin features and manage content</li>
+            <li><strong>SuperAdmin:</strong> Can manage all admin features + manage other admin roles</li>
+            <li>Only SuperAdmin users can change roles for other Azure AD users</li>
+            <li>Changes take effect immediately after updating</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
